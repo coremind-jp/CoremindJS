@@ -1,5 +1,5 @@
-cm.$import("cm.data.Dictionary");
-cm.$import("cm.event.Event");
+cm.using("cm.data.Dictionary");
+cm.using("cm.event.Event");
 cm.Class.create("cm.event.EventDispatcher",
 {
 	EventDispatcher:function(thisObject)
