@@ -90,7 +90,7 @@
     /**
      * 
      */
-    var $import = function(className)
+    var using = function(className)
     {
         var _classPath = className.split(".");
         var _className = _classPath.pop();
@@ -313,7 +313,7 @@
         },
         DataType:dType,
         dump:dump,
-        $import:$import,
+        using:using,
         trace:trace,
         $typeof:typeOf,
     };
