@@ -1,0 +1,72 @@
+cm.Class.create("cm.event.Event",
+{
+	Event:function(thisObject, type)
+	{
+		this.target = thisObject;
+		this.type = type;
+	},
+	destroy:function()
+	{
+		this.target = this.type = this.callbackAuguments = null;
+	}
+});
+cm.EventType =
+{
+    ACTIVATE:"activate",
+    ADDED:"added",
+    ADDED_TO_STAGE:"addedToStage",
+    CANCEL:"cancel",
+    CHANGE:"change",
+    CLEAR:"clear",
+    CLOSE:"close",
+    CLOSING:"closing",
+    COMPLETE:"complete",
+    CONNECT:"connect",
+    CONTEXT3D_CREATE:"context3DCreate",
+    COPY:"copy",
+    CUT:"cut",
+    DEACTIVATE:"deactivate",
+    DISPLAYING:"displaying",
+    ENTER_FRAME:"enterFrame",
+    EXIT_FRAME:"exitFrame",
+    EXITING:"exiting",
+    FRAME_CONSTRUCTED:"frameConstructed",
+    FULLSCREEN:"fullScreen",
+    HTML_BOUNDS_CHANGE:"htmlBoundsChange",
+    HTML_DOM_INITIALIZE:"htmlDOMInitialize",
+    HTML_RENDER:"htmlRender",
+    ID3:"id3",
+    INIT:"init",
+    LOCATION_CHANGE:"locationChange",
+    MOUSE_LEAVE:"mouseLeave",
+    NETWORK_CHANGE:"networkChange",
+    OPEN:"open",
+    PASTE:"paste",
+    PREPARING:"preparing",
+    REMOVED:"removed",
+    REMOVED_FROM_STAGE:"removedFromStage",
+    RENDER:"render",
+    RESIZE:"resize",
+    SCROLL:"scroll",
+    SELECT:"select",
+    SELECT_ALL:"selectAll",
+    SOUND_COMPLETE:"soundComplete",
+    STANDARD_ERROR_CLOSE:"standardErrorClose",
+    STANDARD_INPUT_CLOSE:"standardInputClose",
+    STANDARD_OUTPUT_CLOSE:"standardOutputClose",
+    TAB_CHILDREN_CHANGE:"tabChildrenChange",
+    TAB_ENABLED_CHANGE:"tabEnabledChange",
+    TAB_INDEX_CHANGE:"tabIndexChange",
+    TEXT_INTERACTION_MODE_CHANGE:"textInteractionModeChange",
+    UNLOAD:"unload",
+    USER_IDLE:"userIdle",
+    USER_PRESENT:"userPresent",
+    //mouse
+    CLICK:"click",
+    DOUBLE_CLICK:"doubleClick",
+    MOUSE_DOWN:"mouseDown",
+    MOUSE_MOVE:"mouseMove",
+    MOUSE_OUT:"mouseOut",
+    MOUSE_OVER:"mouseOver",
+    MOUSE_UP:"mouseUp"
+};
