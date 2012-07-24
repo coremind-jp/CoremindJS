@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="coremind/event/|coremind/data/" kind="src" path=""/>
+	<classpathentry kind="src" path="coremind/data"/>
+	<classpathentry kind="src" path="coremind/event"/>
+	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path=""/>
+</classpath>
