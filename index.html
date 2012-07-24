@@ -1,0 +1,40 @@
+<html>
+	<head>
+		<title>CLASS TEST</title>
+		<script type="application/javascript" src="./coremind.js"></script>
+		<script type="application/javascript">
+		cm.$import("cm.event.EventDispatcher");
+		function main()
+		{
+            var _a = new cm.data.Dictionary();
+            _a.a = function(e, num, str)
+            {
+				cm.trace("a", this, e.target, num, str);
+            };
+			_a.b = function(e, a, b, c, d)
+			{
+                cm.trace("b", this, e.target, a, b, c, d);
+			}
+			var _c = new cm.data.Dictionary();
+            _c.c = function(e, a, b, c, d)
+            {
+                cm.trace("c", this, e.target, a, b, c, d);
+            };
+			
+			var e = new cm.event.EventDispatcher();
+            e.addEventListener(_a, cm.EventType.COMPLETE, _a.a, 46);
+            e.addEventListener(_a, cm.EventType.COMPLETE, _a.b, 9);
+            e.addEventListener(_c, cm.EventType.COMPLETE, _c.c, -10);
+            e.removeEventListener(_a, cm.EventType.COMPLETE, _a.a);
+            e.dispatchEvent(cm.EventType.COMPLETE, 999, 888, 777, 6000);
+			
+			cm.Class.profile();
+		}
+		</script>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	</head>
+	<body>
+		<div id="_"></div>
+		
+	</body>
+</html>
