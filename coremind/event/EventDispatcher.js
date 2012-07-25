@@ -10,139 +10,8 @@ cm.Class.create("cm.event.EventDispatcher",
 	},
 	destroy:function()
 	{
-		this.m_bindCallbacks.destroy();
-		this.m_self = this.m_events = this.m_bindCallbacks = null;
-	},
-	/**
-	 * @param {Object} listener
-     * @param {Object} eventType
-     * @param {Object} callbak
-     * @param {Number} proprity
-	 */
-	addEventListener:function()
-	{
-		if (arguments.length < 3)
-		  throw new Error("Arguments Error.");
-		
-		var _listener  = Array.prototype.shift.apply(arguments);//0
-		var _eventType = Array.prototype.shift.apply(arguments);//1
-		var _callback  = Array.prototype.shift.apply(arguments);//2
-		
-		//initialize
-        if (this.m_initFlag)
-        {
-            this.m_initFlag = false;
-            this.m_events = {};
-            this.m_bindCallbacks = new cm.data.Dictionary();
-        }
-        
-        if (this.hasEventListener(_listener, _eventType, _callback))
-        {
-            cm.trace("aleady is listener function.");
-            return;
-        }
-        
-		//searchingDataStructure setup
-		var _data = this.m_bindCallbacks.get(_listener);
-		if (_data === undefined)
-		{
-			_data = {};
-			_data[_eventType] = [_callback];
-			this.m_bindCallbacks.set(_listener, _data);
-		}
-		else
-		{
-			var _callbacks = _data[_eventType];
-			if (_callbacks === undefined)
-				_data[_eventType] = [_callback];
-			else
-			{
-				for (var i = 0, _len = _callbacks.length; i < _len; i++)
-					if (_callbacks[i] === _callback)
-						return;
-                _callbacks.push(_callback);
-			}
-		}
-		
-		//dispatchStructure setup
-		var _this = this.m_self;
-		var _priority = Array.prototype.shift.apply(arguments)//3
-		var _flowData = {
-			priority     : _priority === undefined ? 0: _priority,
-            callback     : _callback,
-			bindCallback : function()
-			{
-				var _event = new cm.event.Event(_this, _eventType);
-				Array.prototype.unshift.call(arguments, _event);
-				_callback.apply(_listener, arguments);
-				_event.destroy();
-			}
-		};
-		
-		var _sequence = this.m_events[_eventType];
-		if (_sequence === undefined)
-		{
-			this.m_events[_eventType] = [];
-			this.m_events[_eventType].push(_flowData);
-		}
-		else
-		{
-			for (var i = 0, _len = _sequence.length; i < _len; i++)
-                if (_sequence[i].priority < _data.priority)
-                    _sequence.splice(i, 0, _flowData);
-			
-			if (_len == _sequence.length) _sequence.push(_flowData);
-		}
-		
-		this.m_listenerCount++;
-	},
-	/**
-	 * @param {Object} listener
-     * @param {Object} eventType
-     * @param {Object} callbak
-	 */
-	removeEventListener:function(listener, eventType, callbak)
-	{
-        if (this.m_initFlag) return;
-        
-		if (this.hasEventListener(listener, eventType, callbak))
-		{
-			var _data = this.m_hasData;
-	        var _callbacks = this.m_hasData[eventType];
-            var _callback  = _callbacks[this.m_hasIndex];
-            var _flowArray = this.m_events[eventType];
-            
-            //イベントフロー制御配列からコールバックを削除
-            for (var i = 0, _len = _flowArray.length; i  < _len; i ++)
-            {
-                if (_flowArray[i].callback === _callback)
-                {
-                    _flowArray.splice(i, 1);
-                    if (_flowArray.length == 0) delete this.m_events[eventType];
-                    break;
-                }
-            }
-            
-            //コールバック管理配列からコールバックを削除
-            _callbacks.splice(this.m_hasIndex, 1);
-			if (_callbacks.length == 0)
-			{
-                delete _data[eventType];
-                
-                var deleteListener = true;
-                for (var p in _data)
-                {
-                    deleteListener = false;
-                    break;
-                }
-                
-                if (deleteListener) this.m_bindCallbacks.del(listener);
-			}
-			
-            delete this.m_hasData;
-            delete this.m_hasIndex;
-            this.m_listenerCount--;
-		}
+		this.m_callbacks.destroy();
+		this.m_self = this.m_eventStream = this.m_callbacks = null;
 	},
 	/**
 	 * @param {Object} listener
@@ -156,13 +25,12 @@ cm.Class.create("cm.event.EventDispatcher",
 		this.m_hasIndex = -1;
 		
 		//指定したlistenerObjectがキーとなっているコールバックが存在しない場合false
-        this.m_hasData = this.m_bindCallbacks.get(listener);
+        this.m_hasData = this.m_callbacks.get(listener);
 		if (this.m_hasData === undefined)
 			return false;
 			
 		//指定したイベントタイプをlistenしているコールバックが存在しない場合false
 		var _callbacks = this.m_hasData[eventType];
-		
 		if (_callbacks === undefined)
 		    return Boolean(eventType === undefined);
 		    
@@ -187,10 +55,141 @@ cm.Class.create("cm.event.EventDispatcher",
 	{
         if (this.m_initFlag) return;
         
-	    var _callbacks = this.m_events[Array.prototype.shift.apply(arguments)];
+	    var _callbacks = this.m_eventStream[Array.prototype.shift.apply(arguments)];
 	    if (_callbacks)
 	        for ( var i = 0, _len = _callbacks.length; i < _len; i++)
 	            _callbacks[i].bindCallback.apply(null, arguments);
+	},
+	/**
+	 * @param {Object} listener
+     * @param {Object} eventType
+     * @param {Object} callbak
+     * @param {Number} proprity
+	 */
+	addEventListener:function()
+	{
+		if (arguments.length < 3)
+		  throw new Error("Arguments Error.");
+		  
+		var _listener  = arguments[0];
+		var _eventType = arguments[1];
+		var _callback  = arguments[2];
+		var _priority  = arguments[3];
+		
+        if (this.m_initFlag)
+        {
+            this.m_initFlag = false;
+            this.m_eventStream = {};
+            this.m_callbacks = new cm.data.Dictionary();
+        }
+        
+        if (this.hasEventListener(_listener, _eventType, _callback)) return;
+        
+		this._addCallbackFromArray(_listener, _eventType, _callback);
+		this._addCallbackFromStream(_listener, _eventType, _callback, _priority);
+        delete this.m_hasData;
+        delete this.m_hasIndex;
+		this.m_listenerCount++;
+	},
+    //コールバック管理配列にコールバックを追加
+	_addCallbackFromArray:function(listener, eventType, callback)
+	{
+		var _data = this.m_hasData;
+		
+		if (_data === undefined)
+		{
+			_data = {};
+			_data[_eventType] = [callback];
+			this.m_callbacks.set(listener, _data);
+		}
+		else
+		{
+			var _callbacks = _data[eventType];
+			_callbacks === undefined ?
+				_data[eventType] = [callback]:
+                _callbacks.push(callback);
+		}
+	},
+    //イベントフロー制御配列にコールバックを追加
+	_addCallbackFromStream:function(listener, eventType, callback, priority)
+	{
+		var _this = this.m_self;
+		var _eventStream = this.m_eventStream[eventType];
+		var _stream = {
+			priority    :priority === undefined ? 0: priority,
+            callback    :callback,
+			bindCallback:function()
+				{
+					var _event = new cm.event.Event(_this, eventType);
+					Array.prototype.unshift.call(arguments, _event);
+					callback.apply(listener, arguments);
+				}
+		};
+		
+		if (_eventStream === undefined)
+		{
+			this.m_eventStream[eventType] = [];
+			this.m_eventStream[eventType].push(_stream);
+		}
+		else
+		{
+			for (var i = 0, _len = _eventStream.length; i < _len; i++)
+			{
+                if (_eventStream[i].priority < _data.priority)
+                {
+                    _eventStream.splice(i, 0, _stream);
+                	return;
+                }
+			}
+			_eventStream.push(_stream);
+		}
+	},	
+	/**
+	 * @param {Object} listener
+     * @param {Object} eventType
+     * @param {Object} callbak
+	 */
+	removeEventListener:function(listener, eventType, callbak)
+	{
+		if (!this.hasEventListener(listener, eventType, callbak)) return;
+		
+        this._removeCallbackFromStream(eventType);
+        this._removeCallbackFromArray(eventType);
+        delete this.m_hasData;
+        delete this.m_hasIndex;
+        this.m_listenerCount--;
+	},
+    //イベントフロー制御配列からコールバックを削除
+	_removeCallbackFromStream:function(eventType)
+	{
+        var _eventStream = this.m_eventStream[eventType];
+        var _callback    = this.m_hasData[eventType][this.m_hasIndex];
+        
+        for (var i = 0, _len = _eventStream.length; i  < _len; i ++)
+        {
+            if (_eventStream[i].callback === callback)
+            {
+                _eventStream.splice(i, 1);
+                if (_eventStream.length == 0)
+                	delete this.m_eventStream[eventType];
+                return;
+            }
+        }
+	},
+    //コールバック管理配列からコールバックを削除
+	_removeCallbackFromArray:function(eventType)
+	{
+		var _index = this.m_hasIndex;
+		var _data = this.m_hasData;
+        var _callbacks = _data[eventType];
+        
+        _callbacks.splice(index, 1);
+		if (_callbacks.length == 0)
+		{
+            delete _data[eventType];
+            for (var p in _data) return;
+            this.m_callbacks.del(listener);
+		}
 	},
 	getListenerCount:function()
 	{
