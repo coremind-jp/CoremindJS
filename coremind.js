@@ -15,7 +15,7 @@
     	A:"array"
     };
     /**
-     * valのタイプを示す値を返します.
+     * valのタイプを示す値を返します.d
      * @param val 任意のデータ
      */
     var typeOf = function(val)
