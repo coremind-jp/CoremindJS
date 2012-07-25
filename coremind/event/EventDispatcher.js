@@ -21,7 +21,8 @@ cm.Class.create("cm.event.EventDispatcher",
 	 */
 	addEventListener:function()
 	{
-		if (arguments.length < 3) return;
+		if (arguments.length < 3)
+		  throw new Error("Arguments Error.");
 		
 		var _listener  = Array.prototype.shift.apply(arguments);//0
 		var _eventType = Array.prototype.shift.apply(arguments);//1
@@ -33,6 +34,12 @@ cm.Class.create("cm.event.EventDispatcher",
             this.m_initFlag = false;
             this.m_events = {};
             this.m_bindCallbacks = new cm.data.Dictionary();
+        }
+        
+        if (this.hasEventListener(_listener, _eventType, _callback))
+        {
+            cm.trace("aleady is listener function.");
+            return;
         }
         
 		//searchingDataStructure setup
@@ -53,15 +60,16 @@ cm.Class.create("cm.event.EventDispatcher",
 				for (var i = 0, _len = _callbacks.length; i < _len; i++)
 					if (_callbacks[i] === _callback)
 						return;
-				_callbacks.push(_callback);
+                _callbacks.push(_callback);
 			}
 		}
 		
 		//dispatchStructure setup
 		var _this = this.m_self;
 		var _priority = Array.prototype.shift.apply(arguments)//3
-		var _data = {
+		var _flowData = {
 			priority     : _priority === undefined ? 0: _priority,
+            callback     : _callback,
 			bindCallback : function()
 			{
 				var _event = new cm.event.Event(_this, _eventType);
@@ -75,15 +83,15 @@ cm.Class.create("cm.event.EventDispatcher",
 		if (_sequence === undefined)
 		{
 			this.m_events[_eventType] = [];
-			this.m_events[_eventType].push(_data);
+			this.m_events[_eventType].push(_flowData);
 		}
 		else
 		{
 			for (var i = 0, _len = _sequence.length; i < _len; i++)
                 if (_sequence[i].priority < _data.priority)
-                    _sequence.splice(i, 0, _data);
+                    _sequence.splice(i, 0, _flowData);
 			
-			if (_len == _sequence.length) _sequence.push(_data);
+			if (_len == _sequence.length) _sequence.push(_flowData);
 		}
 		
 		this.m_listenerCount++;
@@ -100,25 +108,40 @@ cm.Class.create("cm.event.EventDispatcher",
 		if (this.hasEventListener(listener, eventType, callbak))
 		{
 			var _data = this.m_hasData;
-            cm.trace("data", _data, this.m_hasData[eventType].length);
-            var _callbacks = this.m_hasData[eventType];
-            _callbacks.splice(this.m_hasIndex, 1);
-            cm.trace("eventsData", this.m_hasData[eventType], this.m_hasIndex, _callbacks.length);
-            this.m_listenerCount--;
+	        var _callbacks = this.m_hasData[eventType];
+            var _callback  = _callbacks[this.m_hasIndex];
+            var _flowArray = this.m_events[eventType];
             
-            delete this.m_hasData;
-            delete this.m_hasIndex;
-			
+            //イベントフロー制御配列からコールバックを削除
+            for (var i = 0, _len = _flowArray.length; i  < _len; i ++)
+            {
+                if (_flowArray[i].callback === _callback)
+                {
+                    _flowArray.splice(i, 1);
+                    if (_flowArray.length == 0) delete this.m_events[eventType];
+                    break;
+                }
+            }
+            
+            //コールバック管理配列からコールバックを削除
+            _callbacks.splice(this.m_hasIndex, 1);
 			if (_callbacks.length == 0)
 			{
                 delete _data[eventType];
                 
                 var deleteListener = true;
                 for (var p in _data)
+                {
                     deleteListener = false;
+                    break;
+                }
                 
                 if (deleteListener) this.m_bindCallbacks.del(listener);
 			}
+			
+            delete this.m_hasData;
+            delete this.m_hasIndex;
+            this.m_listenerCount--;
 		}
 	},
 	/**
@@ -131,40 +154,40 @@ cm.Class.create("cm.event.EventDispatcher",
 	    if (this.m_initFlag) return false;
 	    
 		this.m_hasIndex = -1;
-		this.m_hasData  = this.m_bindCallbacks.get(listener);
 		
+		//指定したlistenerObjectがキーとなっているコールバックが存在しない場合false
+        this.m_hasData = this.m_bindCallbacks.get(listener);
 		if (this.m_hasData === undefined)
 			return false;
-		else
+			
+		//指定したイベントタイプをlistenしているコールバックが存在しない場合false
+		var _callbacks = this.m_hasData[eventType];
+		
+		if (_callbacks === undefined)
+		    return Boolean(eventType === undefined);
+		    
+		//コールバックまで絞り込みしていない場合、true
+		if (callback === undefined)
+			return true;
+			
+		//コールバックの絞り込み
+		for (var i = 0, _len = _callbacks.length; i < _len; i++)
 		{
-			var _callbacks = this.m_hasData[eventType];
-			if (_callbacks === undefined)
-			    return Boolean(eventType === undefined);
-			else
+			if (_callbacks[i] === callback)
 			{
-				if (callback === undefined)
-					return true;
-				else
-				{
-					for (var i = 0, _len = _callbacks.length; i < _len; i++)
-					{
-						if (_callbacks[i] === callback)
-						{
-							this.m_hasIndex = i;
-							return true;
-						}
-					}
-					return false;
-				}
+				this.m_hasIndex = i;
+				return true;
 			}
 		}
+		
+		//ここまでくる場合、全ての検索条件にマッチしないためfalse
+		return false;
 	},
 	dispatchEvent:function()
 	{
         if (this.m_initFlag) return;
         
-        var _eventType = Array.prototype.shift.apply(arguments);
-	    var _callbacks = this.m_events[_eventType];
+	    var _callbacks = this.m_events[Array.prototype.shift.apply(arguments)];
 	    if (_callbacks)
 	        for ( var i = 0, _len = _callbacks.length; i < _len; i++)
 	            _callbacks[i].bindCallback.apply(null, arguments);
