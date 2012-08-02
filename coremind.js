@@ -1,22 +1,79 @@
 /**
- * @author h.nakahara
+ * @fileOverview
+ * @url https://github.com/otn83/CoremindJS
+ * @author otn83 nakahara@coremind.jp
+ * @version 0.2.0(beta)
+ * @license <a href="http://en.wikipedia.org/wiki/MIT_License">X11/MIT License</a>
  */
 (function(global)
 {
+    /**
+     * @name cm.Domain
+     * @namespace パッケージとディレクトリのルート定義です.
+     */
+    var domain = {
+        /**#@+
+         * @type String
+         * @constant
+         * @memberOf cm.Domain
+         */
+        /**
+         * Coremindパッケージ
+         * @name cm
+         */
+        cm:"./coremind/"
+        /**#@-*/
+    };
+    
 	/**
-	 * データ型定数
+	 * @name cm.DataType
+     * @namespace プリミティブデータ型定数
 	 */
 	var dType = {
+        /**#@+
+         * @type String
+         * @constant
+         * @memberOf cm.DataType
+         */
+	    /**
+	     * String型を示す値
+         * @name S
+	     */
     	S:"string",
+        /**
+         * Number型を示す値
+         * @name N
+         */
     	N:"number",
+        /**
+         * Boolean型を示す値
+         * @name B
+         */
     	B:"boolean",
+        /**
+         * Function型を示す値
+         * @name F
+         */
     	F:"function",
+        /**
+         * Object型を示す値
+         * @name O
+         */
     	O:"object",
+        /**
+         * Array型を示す値
+         * @name A
+         */
     	A:"array"
+        /**#@-*/
     };
+    
+    
+    /**#@+ @memberOf cm */ 
     /**
      * valのタイプを示す値を返します.
-     * @param val 任意のデータ
+     * @param {Object} val 任意のデータ
+     * @return {cm.DataType} データ型定数
      */
     var typeOf = function(val)
     {
@@ -41,9 +98,9 @@
             if (val instanceof Function)
                 return "function";
             else
-            if (val.toString
-            &&  val.toString == "function () { return _className; }")
-                return val.toString();
+            if (val.className
+            &&  val.className == "function () { return _className; }")
+                return val.className();
             else
             if (val instanceof Object)
                 return dType.O;
@@ -53,7 +110,7 @@
     };
     /**
      * 可変長引数に対応したconsole.logです.
-     * cm.config.traceの値をtrueにする事で使用できます。
+     * cm.config.traceの値をtrueにする事で使用できます.
      */
     var trace = function()
     {
@@ -68,7 +125,9 @@
         console.log(_s);
     };
     /**
-     * Objectをダンプします.
+     * Objectの構造をconsole.logで出力します.
+     * @param {Object} val 出力したいオブジェクトです.
+     * @param {String} prefix 出力時に先頭に付加する接頭辞
      */
     var dump = function(val, prefix)
     {
@@ -88,7 +147,10 @@
         }
     };
     /**
-     * 
+     * クラスをインポートします.
+     * classNameからjsファイルの位置を特定し動的に読み込みを開始します.
+     * カスタムパッケージを使用する場合はcm.Domainを使用します.
+     * @param {String} className パッケージ名を含めた完全なクラスパス
      */
     var using = function(className)
     {
@@ -97,75 +159,144 @@
         var _pkg = Class._getPackage(_classPath);
         if (_pkg[_className] === undefined)
         {
-            _classPath.shift(); //delete "cm"
-            var _jsPath = ["./coremind/", _classPath.join("/"), "/", _className, ".js"].join(""); 
+            var _domain = _classPath.shift();
+            var _jsPath = [domain[_domain], _classPath.join("/"), "/", _className, ".js"].join(""); 
             document.write('<script type="text/javascript" src="' + _jsPath + '"></script>');  
         }
-        return _pkg[_className];
     };
+    /**#@-*/
+    
+    
     /**
-     * このライブラリで使用する基本クラスです.
+     * @class このライブラリで使用する基本クラスです.
+     * @name cm.BaseObject
      */
     var BaseObject = function()
     {
+        /**
+         * インスタンスの名称
+         * @name name
+         * @memberOf cm.BaseObject#
+         * @type String
+         */
         this.name = "";
-        this.__initialize.apply(this, arguments);
+        this.cm_initialize.apply(this, arguments);
     };
-    BaseObject.prototype.__instanceCounter = 0;
-    BaseObject.prototype.__initialize = function() { this.BaseObject.apply(this, arguments); };
-    BaseObject.prototype.BaseObject   = function() { ++BaseObject.prototype.__instanceCounter; };
-    BaseObject.prototype.destroy      = function() { --BaseObject.prototype.__instanceCounter; };
-    BaseObject.prototype.toString     = function() { return "BaseObject"; };
-    BaseObject.prototype.getRefCount  = function() { return BaseObject.prototype.__instanceCounter; };
+    BaseObject.prototype.cm_instanceCounter = 0;
+    BaseObject.prototype.cm_initialize = function() { this.BaseObject.apply(this, arguments); };
     /**
-     * クラスを生成するためのClassパッケージです.
+     * コンストラクターを実行します.
+     * @name BaseObject
+     * @constructor
+     * @function
+     */
+    BaseObject.prototype.BaseObject = function() { ++BaseObject.prototype.cm_instanceCounter; };
+    /**#@+
+     * @memberOf cm.BaseObject#
+     * @function
+     */
+    /**
+     * このオブジェクトの破棄処理を実行します.
+     * @name destroy
+     */
+    BaseObject.prototype.destroy = function() { --BaseObject.prototype.cm_instanceCounter; };
+    /**
+     * クラス名を取得します.
+     * @name className
+     */
+    BaseObject.prototype.className = function() { return "BaseObject"; };
+    /**
+     * クラスパスを取得します.
+     * @name classPath
+     */
+    BaseObject.prototype.classPath = function() { return "cm"; };
+    /**
+     * 生成されたインスタンス数を取得します.
+     * @name getRefCount
+     */
+    BaseObject.prototype.getRefCount = function() { return BaseObject.prototype.cm_instanceCounter; };
+    /**
+     * instanceがこのクラスのインスタンスかを示す値を返します.
+     * スーパークラスであった場合でもtrueを返します.
+     * @name is
+     * @param {Object} instance
+     * @return {Boolean} instanceがこのクラスのインスタンスであった場合true
+     */
+    BaseObject.prototype.is = function(instance)
+    {
+        return Boolean(
+            typeOf(instance.prototype.className) == dType.F
+        &&  instance.prototype.className() == "BaseObject");
+    };
+    /**
+     * スーパークラスのメソッドを呼び出します.
+     * コンストラクターを取得するには文字列"constructor"を指定します.
+     * @name super
+     * @param {String} methodName メソッド名
+     */
+    BaseObject.prototype.super = function() {};
+    /**#@-*/
+    
+    
+    /**
+     * @name cm.Class
+     * @namespace cm.Class
      */
     var Class =
     {
-        /**
+        /**#@+ @memberOf cm.Class */
+       /**
          * 生成されたクラスオブジェクトを格納する配列です.
+         * @private
+         * @name all
          */
         all:[BaseObject],
         /**
          * クラスから生成されたインスタンスの数を出力します.(参照カウンター)
-         * new演算子で数を繰り上げ, インスタンスのdestroyメソッドの呼び出しで繰り下げます。
-         * サブクラスをnewした場合スーパークラスも数が繰り上がります。
+         * new演算子で数を繰り上げ, インスタンスのdestroyメソッドの呼び出しで繰り下げます.
+         * サブクラスをnewした場合スーパークラスも数が繰り上がります.
+         * @name profile
+         * @function
          */
         profile:function()
         {
             for(var i = 0, j = this.all.length; i < j; i++)
                 if (this.all[i].prototype.getRefCount() > 0)
-                    trace(this.all[i].prototype.toString(), this.all[i].prototype.getRefCount());
+                    trace(this.all[i].prototype.className(), this.all[i].prototype.getRefCount());
         },
         /**
-         * クラスを生成します.
+         * クラスを作成します.
+         * @name create
          * @param {String} className 生成するクラスの名前(パッケージ名も含めた完全な名称)
-         * @param {Object, Class} superClass 生成するクラスのスーパークラス、　必要ない場合は生成するクラスの定義オブジェクト
+         * @param {Object} superClass 生成するクラスのスーパークラス、　必要ない場合は生成するクラスの定義オブジェクト
          * @param {Object} subClassDefine 生成するクラスの定義オブジェクト（生成するクラスにスーパークラスがない場合、空）
+         * @param {Boolean} singleton 単一のインスタンスのみで使用するクラスの場合true
+         * @function
          */
-        create : function()
+        /**#@-*/
+        create:function()
         {
-            //arguments check
             if (typeof arguments[0] != dType.S)
-                throw new Error("Class name is not difined." + arguments);
+                throw new Error("Class name is not difined." + dump(arguments));
                 
-            var _classPath = Array.prototype.shift.apply(arguments).split(".");
+            //* arguments shift
+            var _classPath = Array.prototype.shift.apply(arguments).split(".");// *
             var _className = _classPath.pop();
+            var superClass = BaseObject;
+            var singleton;
+            var subClassDefine;
             
-            if ((arguments.length == 1 && (typeOf(arguments[0]) != dType.O || typeOf(arguments[0][_className]) != "function"))
-            ||  (arguments.length == 2 && (typeOf(arguments[1]) != dType.O || typeOf(arguments[1][_className]) != "function")))
-                throw new Error("Constructor is not difined." + arguments);
+            if (typeOf(arguments[0]) == dType.F)
+                superClass = Array.prototype.shift.apply(arguments);// *
                 
-            if (arguments.length == 2)
+            if (typeOf(arguments[0]) == dType.O
+            &&  typeOf(arguments[0][_className] == dType.F))
             {
-                superClass     = arguments[0];
-                subClassDefine = arguments[1];
+                subClassDefine = Array.prototype.shift.apply(arguments);// *
+                singleton = Array.prototype.shift.apply(arguments) ? true: false;// *
             }
             else
-            {
-                superClass     = BaseObject;
-                subClassDefine = arguments[0];
-            }
+                throw new Error("Constructor is not difined." + dump(arguments));
             
             //copy super class
             var _prototypeClone = function(){};
@@ -173,67 +304,35 @@
             var _super = new _prototypeClone();
             
             //create sub class
-            var _sub = this._getPackage(_classPath)[_className] = this.all[this.all.length] = function(){
-                this.__initialize.apply(this, arguments);
+            var _sub = this.all[this.all.length] = function(){
+                this.cm_initialize.apply(this, arguments);
             };
             
-            //attach prototype
+            //attach prototype subClass define
             _sub.prototype = subClassDefine;
-            
             //override prototype member
-            //参照カウンタ
-            _sub.prototype.__instanceCounter = 0;
-            /**
-             * インスタンス名
-             */
+            _sub.prototype.cm_instanceCounter = 0;
             _sub.prototype.name = "";
-            /**
-             * 参照カウンタを取得します.
-             * @param 
-             */
-            _sub.prototype.getRefCount = function() { return _sub.prototype.__instanceCounter; };
-            /**
-             * クラス名を取得します.
-             */
-            _sub.prototype.toString = function() { return _className; };
-            /**
-             * クラスパスを取得します.
-             */
+            _sub.prototype.className = function() { return _className; };
             _sub.prototype.classPath = function() { return _classPath.join("."); };
-            /**
-             * classObjectがこのクラスのインスタンスかを示す値を返します.
-             * スーパークラスだった場合でもtrueを返します。
-             */
-            _sub.prototype.is = function(classObject)
+            _sub.prototype.getRefCount = function() { return _sub.prototype.cm_instanceCounter; };
+            _sub.prototype.is = function(instance)
             {
-                if (classObject.prototype.toString() == "BaseObject")
+                if (typeOf(instance.prototype.className) == dType.F
+                &&  instance.prototype.className() === this.className())
                     return true;
                 else
-                if (typeOf(_super.prototype.is) == "function"
-                && _super.prototype.is(classObject))
-                    return true;
-                else
-                if (classObject.prototype.toString() === this.toString())
-                    return true;
-                else
-                    return false;
+                    _super.prototype.is(instance);
             };
-            
-            //create super method
-            var _superClassName = _super.prototype.toString();
+            //method super
+            var _superClassName = _super.prototype.className();
             var _constructor = _super.prototype[_superClassName];
-            if (typeOf(_constructor) == "function")
-                delete _sub.prototype[_superClassName];
-            /**
-             * スーパークラスのメソッドを呼び出します.
-             */
+            if (typeOf(_constructor) == "function") delete _sub.prototype[_superClassName];
             _sub.prototype.super = function()
             {
                 var _methodName = Array.prototype.shift.apply(arguments);
                 if (_methodName == "constructor")
-                    _super.prototype.__initialize.apply(this, arguments);
-                //if (_methodName == "constructor" && typeOf(_constructor) == "function")
-                    //_constructor.apply(this, arguments);
+                    _super.prototype.cm_initialize.apply(this, arguments);
                 else
                 {
                     try { return _super.prototype[_methodName].apply(this, arguments); }
@@ -241,7 +340,7 @@
                 }
             };
             
-            //create override method
+            //attach prototype superClass define
             for (var member in _super.prototype)
             {
                 //destroy
@@ -250,10 +349,10 @@
                     var _destroy = function()
                     {
                         _super.prototype.destroy.apply(this, arguments);
-                        _sub.prototype.__instanceCounter--;
+                        _sub.prototype.cm_instanceCounter--;
                     };
                     
-                    if (typeOf(_sub.prototype.destroy) == "function")
+                    if (typeOf(_sub.prototype.destroy) == dType.F)
                     {
                         var _subClassDestroy = _sub.prototype.destroy;
                         _sub.prototype.destroy = function()
@@ -274,15 +373,21 @@
             }
             
             //create sub class initialize method
-            _sub.prototype.__initialize = function()
+            /** @ignore */
+            _sub.prototype.cm_initialize = function()
             {
-                _super.prototype.__initialize.apply(this, arguments);
+                _super.prototype.cm_initialize.apply(this, arguments);
                 this[_className].apply(this, arguments);
-                _sub.prototype.__instanceCounter++;
+                _sub.prototype.cm_instanceCounter++;
             };
+            
+            //set package(singleton switch)
+            this._getPackage(_classPath)[_className] = singleton ? new _sub(): _sub;
         },
         /**
          * パッケージを生成しwindowオブジェクトに割り当てます.
+         * @memberOf cm.Class
+         * @private
          * @param {Object} pathArray パッケージの完全な名称
          * @return {Object} 生成されたObjectオブジェクト
          */
@@ -303,26 +408,33 @@
             return _parentPackage;
         },
     };
+    
+    
     /**
-     * @namespace cm
+     * @name cm
+     * @namespace CoremindJS
      */
-    global.cm = {
+    global.cm = 
+    {
         Class:Class,
         config:{
             trace:true
         },
         DataType:dType,
+        Domain:domain,
         dump:dump,
         using:using,
         trace:trace,
-        $typeof:typeOf,
+        typeOf:typeOf,
     };
 	global.addEventListener("load", function () {
+    /*
 		if (window.pageYOffset <= 1) {
 			setTimeout (function () {
 				scrollTo(0, 1);
 			}, 10);
 		}
+    */
 		if (typeOf(global.main) == dType.F) global.main();
 	}, false);
 })(window);
