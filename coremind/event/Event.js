@@ -1,0 +1,73 @@
+cm.Class.create(
+{
+    $name:"cm.event.Event",
+    $static:
+    {
+        //COMMON
+        INIT:"init",
+        ACTIVATE:"activate",
+        DEACTIVATE:"deactivate",
+        CANCEL:"cancel",
+        CLEAR:"clear",
+        CONNECT:"connect",
+        FULLSCREEN:"fullScreen",
+        OPEN:"open",
+        CLOSING:"closing",
+        SELECT_ALL:"selectAll",
+        UPDATE:"update",
+        COMPLETE:"complete",
+        SOUND_COMPLETE:"soundComplete",
+        //FRAME, Object
+        CONTEXT_MENU:"contextMenu",
+        ABORT:"abort",
+        LOAD:"load",
+        UNLOAD:"unload",
+        ERROR:"error",
+        RESIZE:"resize",
+        SCROLL:"scroll",
+        BEFORE_UNLOAD:"beforeUnload",
+        CLOSE:"close",
+        //FORM
+        SELECT:"select",
+        CHANGE:"change",
+        SUBMIT:"submit",
+        RESET:"reset",
+        FOCUS:"focus",
+        BLUR:"blur",
+        //CLIPBOARD
+        COPY:"copy",
+        CUT:"cut",
+        PASTE:"paste",
+        //KEYBOARD
+        KEY_DOWN:"keyDown",
+        KEY_PRESS:"keyPress",
+        KEY_UP:"keyUp",
+        //MOUSE
+        DRUG_DROP:"drugDrop",
+        CLICK:"click",
+        DOUBLE_CLICK:"doubleClick",
+        MOUSE_DOWN:"mouseDown",
+        MOUSE_MOVE:"mouseMove",
+        MOUSE_OUT:"mouseOut",
+        MOUSE_OVER:"mouseOver",
+        MOUSE_WHEEL:"mouseWheel",
+        MOUSE_UP:"mouseUp",
+        //AJAX
+        LOAD_START:"loadStart",
+        LOAD_END:"loadEnd",
+        PROGRESS:"progress",
+        TIMEOUT:"timeout"
+    },
+    $define:
+    {
+        Event:function(dispatcher, type)
+        {
+            this.target = dispatcher;
+            this.type = type;
+        },
+        destroy:function()
+        {
+            this.target = this.type = null;
+        }
+    }
+});

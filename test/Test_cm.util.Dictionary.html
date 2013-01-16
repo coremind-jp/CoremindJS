@@ -1,0 +1,45 @@
+<html>
+<head>
+    <script type="text/javascript" src="../coremind.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+    var _class = "cm.util.Dictionary";
+    document.title = _class;
+    cm.Class.using(_class);
+    function main()
+    {
+        var obj = new cm.util.Dictionary();
+        
+        cm.log.d("TEST[set primitive]");
+        obj.set("a", "a");
+        cm.log.d(obj.get("a"));
+        
+        cm.log.d("TEST[set reference]");
+        var _key0 = {};
+        obj.set(_key0, "key0");
+        cm.log.d(obj.get(_key0));
+        var _key1 = {};
+        obj.set(_key1, "key1");
+        cm.log.d(obj.get(_key1));
+        
+        cm.log.d("TEST[override]");
+        obj.set(_key0, 888);
+        cm.log.d(obj.get(_key0));
+        
+        obj.set(_key1, _key0);
+        cm.log.d(obj.get(obj.get(_key1)));
+        
+        cm.log.d("TEST[delete]");
+        obj.del("a");
+        obj.del(_key0);
+        obj.del(_key1);
+        cm.log.d(obj.get("a"));
+        cm.log.d(obj.get(_key0));
+        cm.log.d(obj.get(_key1));
+        
+        obj.destroy();
+    }
+    </script>
+</body>
+</html>

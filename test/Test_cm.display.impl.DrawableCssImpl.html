@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="../html5reset-1.6.1.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../coremind.js"></script>
+    <style type="text/css">
+    </style>
+</head>
+<body>
+    <center>
+    <div id="testX" style="background-color: #FF0000; width: 100px; height: 100px;";>X</div>
+    <div id="testY" style="background-color: #00FF00; width: 100px; height: 100px;";>Y</div>
+    <div id="testWidth" style="background-color: #FFFF00; width: 100px; height: 100px;";>WIDTH</div>
+    <div id="testHieght" style="background-color: #00FFFF; width: 100px; height: 100px;";>HEIGHT</div>
+    <div id="testColor" style="background-color: #FF0000; width: 100px; height: 100px;";>COLOR</div>
+    <div id="testImage" style="background-color: #00FF00; width: 100px; height: 100px;";>IMAGE</div>
+    </center>
+    
+    <script type="text/javascript">
+    var _class = "cm.display.impl.DrawableCssImpl";
+    document.title = _class;
+    cm.Class.using("cm.display.Position");
+    cm.Class.using("cm.display.Container");
+    cm.Class.using(_class);
+    function main()
+    {
+        var ids = [
+            "testX", "testY", "testWidth", "testHieght", "testColor", "testImage"];
+        var methods = [
+            "xRel", "yRel", "widthFix", "heightFix", "setColor", "setImage"];
+        var values = [50, 50, 175, 450, 0xFFFF00FF, "http://pagead2.googlesyndication.com/simgad/2165539166382533106"];
+        
+        for(var i = 0, len = ids.length; i < len; i ++)
+        {
+            var obj = document.getElementById(ids[i]);
+            obj.cmDisplay = {
+                container:new cm.display.Container(),
+                position:new cm.display.Position(),
+                drawable:new cm.display.impl.DrawableCssImpl(obj)
+            };
+            obj.cmDisplay.position.xRel(100 * i).yRel(100 * i)
+            obj.cmDisplay.container.setColor(0xFF808080);
+            switch (i)
+            {
+                case 0:
+                case 1:
+                    obj.cmDisplay.position[methods[i]](values[i]);
+                    break;
+                default :
+                    obj.cmDisplay.container[methods[i]](values[i]);
+                    break;
+            }
+            obj.cmDisplay.drawable.draw();
+        }; 
+    }
+    </script>
+</body>
+</html>

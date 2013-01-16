@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="../html5reset-1.6.1.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../coremind.js"></script>
+    <style type="text/css">
+    </style>
+</head>
+<body style="background-color: white">
+    <center>
+    <div id="testX" style="width: 100px; height: 100px;";>X</div>
+    <div id="testY" style="width: 100px; height: 100px;";>Y</div>
+    <div id="testWidth" style="width: 100px; height: 100px;";>WIDTH</div>
+    <div id="testHieght" style="width: 100px; height: 100px;";>HEIGHT</div>
+    <div id="testColor" style="width: 100px; height: 100px;";>BGCOLOR</div>
+    <div id="testImage" style="width: 100px; height: 100px;";>BGIMAGE</div>
+    <div id="testGradient" style="width: 100px; height: 100px;";>BGGRADIENT</div>
+    </center>
+    
+    <script type="text/javascript">
+    var _class = "cm.display.impl.DrawableOldInternetExplorerImpl";
+    document.title = _class;
+    cm.Class.using("cm.display.abs.fill.Shadow");
+    cm.Class.using("cm.display.abs.Filters");
+    cm.Class.using("cm.display.abs.Position");
+    cm.Class.using("cm.display.abs.Container");
+    cm.Class.using("cm.display.abs.Background");
+    cm.Class.using("cm.display.abs.Border");
+    cm.Class.using(_class);
+    function main()
+    {
+        var ids = [
+            "testX", "testY", "testWidth", "testHieght", "testColor", "testImage", "testGradient"];
+        var methods = [
+            "xRel", "yRel", "widthFix", "heightFix", "editBackgroundColor", "editBackgroundImage", "editBackgroundGradient"];
+        var values = [50, 50, 175, 450, 0xFF808080, "./0.gif"];
+        var _s1 = new cm.display.abs.fill.Shadow(0, 0, 14, 10, 0x80FF0000);
+        var _s2 = new cm.display.abs.fill.Shadow(0, 0, 14, 10, 0x8000FF00);
+        var _sO = null;
+        
+        for(var i = 0, len = ids.length; i < len; i ++)
+        {
+            var obj = document.getElementById(ids[i]);
+            obj.cmDisplay = {
+                filters:new cm.display.abs.Filters(),
+                border:new cm.display.abs.Border(),
+                background:new cm.display.abs.Background(),
+                container:new cm.display.abs.Container(),
+                position:new cm.display.abs.Position(),
+                drawable:new cm.display.impl.DrawableOldInternetExplorerImpl(obj)
+            };
+            obj.cmDisplay.position.xRel(80 * i).yRel(80 * i)
+            obj.cmDisplay.container.widthRel(100).heightRel(100);
+            obj.cmDisplay.background.editColor().setARGB(0xFF808080);
+            obj.cmDisplay.container.editShape().applyRound(20);
+            switch (i)
+            {
+                case 0:
+                case 1:
+                    obj.cmDisplay.position[methods[i]](values[i]);
+                    break;
+                case 3:
+                    obj.cmDisplay.container[methods[i]](values[i]);
+                    obj.cmDisplay.filters.add(_s1).add(_s2);
+                    _sO = obj;
+                    break;
+                case 4:
+                    obj.cmDisplay.background.editColor().setARGB(0xFF000000 + 0xfF);
+                    break;
+                case 5:
+                    obj.cmDisplay.background.editImage()
+                        .setSource(values[i])
+                        .editAlign().applyCenterH().applyCenterV();
+                    break;
+                case 6:
+                    obj.cmDisplay.container.editShape()
+                        .applyRound(40)
+                        .setBottomLeftRound(15, 15);
+                    obj.cmDisplay.border
+                        .weightFix(5)
+                        .setStyle(cm.display.abs.Border.DOT)
+                        .editColor().setARGB(0x80FF0000);
+                    obj.cmDisplay.background.editGradient()
+                        .setBeginColor(0xFF000000)
+                        .push(0xFF00FF00, 50)
+                        .push(0xFFFFFFFF, 1)
+                        .push(0xFF00FF00, 50);
+                    break;
+                default :
+                    obj.cmDisplay.container[methods[i]](values[i]);
+                    break;
+            }
+            obj.cmDisplay.drawable.draw();
+        }
+        var _s3 = new cm.display.abs.fill.Shadow(0, 0, 30, 0, 0x80000000, true);
+        setTimeout(function(){
+            _sO.cmDisplay.filters.add(_s3);
+            _s1.editOffsetPosition().x = 100;
+            _s1.editColor().setARGB(0x800000FF);
+            _s2.editOffsetPosition().x = -100;
+            _s2.editColor().setARGB(0x8000FF00);
+            _sO.cmDisplay.drawable.draw();
+            setTimeout(function(){
+                _s2.editOffsetPosition().y = -100;
+                _s2.editColor().setARGB(0x80FF0000);
+                _s3.enabledInset();
+                _sO.cmDisplay.filters.remove(_s1);
+                _sO.cmDisplay.drawable.draw();
+                setTimeout(function(){
+                    cm.log.d("TEMPD");
+                    _sO.cmDisplay.filters.remove(_s3);
+                    _sO.cmDisplay.drawable.draw();
+                }, 1000);
+            }, 1000);
+        }, 1000);
+    }
+    </script>
+</body>
+</html>

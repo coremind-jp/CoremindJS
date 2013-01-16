@@ -1,0 +1,85 @@
+<html>
+<head>
+    <script type="text/javascript" src="../coremind.js"></script>
+    <style type="text/css" src="../html5reset-1.6.1.css"></style>
+</head>
+<body>
+    <table>
+        <tr>
+            <td>
+                <form>
+                    <select>
+                        <option>SelectObption A</option>
+                        <option>SelectObption B</option>
+                        <option>SelectObption C</option>
+                    </select>
+                    <br />
+                    <input type="radio" name="radio"/>Radio A<br />
+                    <input type="radio" name="radio"/>Radio B<br />
+                    <input type="radio" name="radio"/>Radio C<br />
+                    <input type="checkbox" name="checkbox"/>Checkbox A<br />
+                    <input type="checkbox" name="checkbox"/>Checkbox B<br />
+                    <input type="checkbox" name="checkbox"/>Checkbox C<br />
+                    <textarea></textarea>
+                    <br />
+                    <input type="submit" value="submit"/>
+                    <br />
+                    <input type="reset" value="reset"/>
+                </form>
+            </td>
+            <td>
+                <p id="tf"></p>
+            </td>
+            <td>
+                <textarea id="ta"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+        </tr>
+    </table>
+    <script type="text/javascript">
+    var _class = "cm.core.BrowserInterface";
+    document.title = _class;
+    cm.Class.load(
+        "cm.event.Event",
+        _class,
+        function main()
+        {
+            var _tf = cm.dom.d.getElementById("tf");
+            var _ta = cm.dom.d.getElementById("ta");
+            var _eventlog = [];
+            
+            _ta.style.width = "400px";
+            _ta.style.height = "500px";
+            
+            for (var _defValue in cm.event.Event)
+            {
+                var _eventType = cm.event.Event[_defValue];
+                cm.dom.addEventListener(_eventType, cm.dom.d.body, function(e)
+                {
+                    //e.preventDefault();
+                    _eventlog.unshift(e.type);
+                    if (_eventlog.length > 9) _eventlog.pop();
+                    _tf.innerHTML = _eventlog.join("<br>");
+                    
+                    _ta.value = "";
+                    for (var prop in e)
+                        if (cm.equal.isNumber(e[prop]) || cm.equal.isString(e[prop]))
+                            _ta.value += prop + " : " + e[prop] + "\n";
+                            
+                    //returnValue = "Dialog text here.";
+                    return 'call back value.';
+                }, true);
+            }
+        });
+    </script>
+    <a href="http://google.com">test</a>
+    <script>if (location.hostname == "127.0.0.1") { document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=2"></' + 'script>') }</script>
+</body>
+</html>

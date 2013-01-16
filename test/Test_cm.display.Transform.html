@@ -1,0 +1,51 @@
+<html>
+<head>
+    <script type="text/javascript" src="../coremind.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+    var _class = "cm.display.Transform";
+    document.title = _class;
+    cm.Class.using(_class);
+    function main()
+    {
+        var obj = new cm.display.Transform();
+        cm.log.d(obj);
+        
+        cm.log.d("TEST[set fix property]");
+        obj
+            .scaleXFix(1.2)
+            .scaleYFix(1.3)
+            .scaleZFix(1.4)
+            .rotationXFix(10)
+            .rotationYFix(20)
+            .rotationZFix(30)
+            .originXFix(100)
+            .originYFix(100);
+        cm.log.d(obj);
+        
+        cm.log.d("TEST[dump isChanged]");
+        cm.log.d(obj.isChanged());
+        
+        cm.log.d("TEST[applied]");
+        obj.applied();
+        cm.log.d(obj.isChanged());
+        cm.log.d(obj);
+        
+        cm.log.d("TEST[set relative property]");
+        obj
+            .scaleXRel(.8)
+            .scaleYRel(.7)
+            .scaleZRel(.6)
+            .rotationXRel(40)
+            .rotationYRel(30)
+            .rotationZRel(20)
+            .originXRel(-50)
+            .originYRel(-50);
+        cm.log.d(obj);
+        
+        obj.destroy();
+    }
+    </script>
+</body>
+</html>

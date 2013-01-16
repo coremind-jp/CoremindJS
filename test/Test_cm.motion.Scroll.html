@@ -1,0 +1,379 @@
+<html>
+<head>
+    <script type="text/javascript" src="../coremind.js"></script>
+    <style type="text/css" src="../html5reset-1.6.1.css"></style>
+    <style type="text/css">
+        #scrollTest {
+            margin:20px;
+            padding:20px;
+            overflow-x: hidden;
+            overflow-y: scroll;
+            width:400px;
+            height:400px;
+        }
+        #scrollParent {
+            width:1920px;
+            margin:auto;
+            padding:20px;
+        }
+    </style>
+</head>
+<body>
+<div id="scrollParent">
+    <div id="scrollTest">
+
+JavaScript
+    ウィキペディアにおけるJavaScriptの使用についてはWikipedia:カスタムJSをご覧ください。
+JavaScript
+拡張子 .js
+パラダイム   マルチパラダイム
+登場時期    1995年
+設計者 ブレンダン・アイク
+開発者 ネットスケープコミュニケーションズ、Mozilla Foundation
+最新リリース  1.8 / 2008年
+評価版リリース 1.9.3 / 2010年
+型付け ダック・タイピング
+主な処理系   JavaScriptCore、KJS、Nitro、Rhino、SpiderMonkey、V8ほか
+方言  JScript
+影響を受けた言語    C言語、Java、Perl、Python、Scheme、Self
+影響を与えた言語    Dart、Objective-J
+プラットフォーム    クロスプラットフォーム
+ JavaScript - ウィキブックス
+テンプレートを表示
+JavaScript（ジャヴァスクリプト）とは、プログラミング言語である。
+オブジェクト指向のスクリプト言語であることを特徴とする。
+主にウェブブラウザに実装され、動的なウェブサイト構築や、リッチインターネットアプリケーションなど高度なユーザインタフェースの開発に用いられる。
+目次  [非表示] 
+1 概要
+2 プログラミング言語としての特徴
+3 歴史
+3.1 誕生
+3.2 現在
+3.3 JavaScript 2.0
+4 セキュリティ上の制限
+5 文法
+5.1 Hello world
+5.2 その他
+6 DOM
+7 バージョンとブラウザの対応表
+8 JavaScriptライブラリ
+9 関連項目
+9.1 Dart
+10 脚注
+11 外部リンク
+概要 [編集]
+
+JavaScriptという言葉は狭義にはMozillaが仕様を策定し実装しているスクリプト言語を指す。このスクリプト言語はEcmaインターナショナルでECMAScript(ECMA-262)として標準化されており、多くのWebブラウザー等はこの標準化されたECMAScriptを実装している。たとえば、マイクロソフトによる実装はJScriptと呼ぶ。
+一般的にJavaScriptという言葉が使われるときはこのようなさまざまなECMAScriptの実装も含んだ幅広い意味でつかわれるので、どちらの意味でJavaScriptという言葉が使われているかは文脈で判断する必要がある[1]。
+ECMAScriptは仕様自体に独自の拡張を条件付きで認める記述があり[2]、現在主要なブラウザが実装しているスクリプト言語はすべてECMAScriptに準拠していることになる。広義の意味でこれをJavaScriptと呼ぶ場合、主要なブラウザが実装しているスクリプト言語はマイクロソフトやGoogle,Appleの実装も含めてJavaScriptである。
+なお、Webブラウザーでよく実装されているAPIであるDOM(Document Object Model)はECMAScriptの仕様の一部ではないので、DOMの準拠の有無はECMAScriptの準拠の有無とは関係ない。[3]
+また、プログラミング言語JavaはJavaScriptとは別物である（後述の#歴史を参照）。
+プログラミング言語としての特徴 [編集]
+
+JavaScriptはプロトタイプベースのオブジェクト指向プログラミング言語である。多くの場合はC言語に似た手続き型言語のようなスタイルで書かれるが、第一級関数をサポートしている（関数を第一級オブジェクトとして扱える）など、関数型言語の性質も持ち合わせている。そのような柔軟な設計から、いくつかのアプリケーションではマクロ言語としても採用されている[4]。
+AptanaやEclipse、NetBeans、IntelliJ IDEAなどの統合開発環境はJavaScriptをサポートしており、大規模開発が可能になっている。また各処理系の実装の違いによる互換性の問題は、Prototype JavaScript FrameworkなどのJavaScriptライブラリが吸収することにより解決が図られている。さらにExt JSなどの本格的なGUIライブラリの登場により、デスクトップアプリケーションと遜色ないユーザインタフェースの構築が可能になった。
+また、Direct Web Remoting (DWR) などの技術の発達によりクライアント・サーバ間の通信が著しく容易になったことや、JettyなどのアプリケーションサーバがComet利用時のメモリ使用量の削減を実現したため、サーバからクライアントへの情報のプッシュ型の配信が実用的となった。
+JavaScriptはスレッド制御の命令をサポートしていないため、マルチスレッドのコードを書くことが困難だが、WHATWGによりWeb Workers[5] APIの策定が進められており、バックグラウンド処理や非同期入出力の制御が容易に実現できるようになる。
+歴史 [編集]
+
+誕生 [編集]
+JavaScriptはネットスケープコミュニケーションズのブレンダン・アイクによって開発され、Netscape Navigator 2.0で実装された。開発当初はLiveScriptと呼ばれていたが、1995年にサン・マイクロシステムズ（現・オラクル）が開発したプログラミング言語Javaが当時大きな注目を浴びており、ネットスケープとサン・マイクロシステムズが業務提携していた事もあったため、JavaScriptという名前に変更された[6][7]。
+1996年にマイクロソフトのInternet Explorer 3.0に搭載されるようになると、その手軽さからJavaScriptは急速に普及していく。1997年、通信に関する標準を策定する国際団体EcmaインターナショナルによってJavaScriptの中核的な仕様がECMAScriptとして標準化され[8]、多くのウェブブラウザで利用できるようになった。
+ネットスケープは、ウェブアプリケーション開発言語として自社のサーバ製品に実装したLiveWire JavaScriptも発表したが[7]、こちらはあまり普及しなかった。
+JavaScriptの登場初期は、ブラウザベンダー間で言語仕様の独自拡張が行われていたため、ブラウザ間の互換性が極めて低かった。しかし現在では、ECMAScriptの策定により実装間の互換性は向上し、DOMなど関連仕様の実装に関する互換性も比較的高くなっている。ただ、現在でも特定のブラウザでしか実行できないECMAScript以前の古い構文や、ブラウザ独自のDOMを使ったコードが使用されている場合があり、互換性の問題が完全に解消されたわけではない。
+現在 [編集]
+市場のブラウザ間互換性がある程度確立された2000年頃には、GoogleやAmazon等の大手企業もJavaScriptを積極的に利用し始めた。2005年、マイクロソフトが開発したJavaScriptの非同期通信を利用した技術にAjaxという名前が付けられたことによって、高機能なウェブアプリケーション開発言語の一つとして再び注目を集めた。Ajaxを利用している代表的なアプリケーションとして、Google マップ[1]やAmazon Diamond Search[2]などがある。
+また最近では、Mozilla Firefox用アドオンのGreasemonkeyやOperaの標準機能、Google Chromeのエクステンションなどにおいて、「ユーザスクリプト」と呼ばれるウェブページ読み込み時に実行できるJavaScriptアプリケーションが登場している。
+以前はインタプリタ方式で実行されることが一般的であったため、実行速度はさほど速くなかったが、現在ではJITコンパイルなどを利用した各種の最適化がなされており、各ウェブブラウザのベンダーともに高速化を図ってしのぎを削っている。JavaScriptのJITコンパイラも参照。
+JavaScript 2.0 [編集]
+2000年から2003年にかけて、現在のJavaScriptの後継バージョンとなるJavaScript 2.0を作ろうとした動きがあったが、ネットスケープとマイクロソフトの対立でまとまらなかった。当時ネットスケープが提案していた案はアドビのActionScript 2.0に引き継がれ、マイクロソフトの案はJScript .NETへと引き継がれた。その後ECMAScript 4の策定が進められ、2006年の時点でMozilla Foundationはこれに基づいてJavaScript 2.0を作成することを表明していた。MozillaはECMAScript 4の策定にあたって、Pythonの文法を一部取り込んだ案を提案しており、自身でもこれを実装している[9]。
+しかしその後、ECMAScriptの標準化作業がMozilla、Adobe、Opera、Googleらが推すECMAScript 4と、Microsoft、Yahoo!らが推すECMAScript 3.1に事実上分裂してしまった影響から、2008年8月に大きな方針転換があり、JavaScript 2.0のベースを策定するプロジェクトとして新たに「ECMAScript Harmony」が発足した。同プロジェクトではECMAScript 3.1をベースとしつつも、ECMAScript 4に入る予定だった機能のいくつかを取り込む形で標準を策定する予定となっている。なお、ECMAScript 4で導入された名前空間・パッケージなどの機能は導入されない。[10]
+セキュリティ上の制限 [編集]
+
+通常のウェブブラウザの実装におけるXMLHttpRequestやインラインフレームを使った通信では、セキュリティ上の制限から他のドメインのリソースにアクセスすることができない（同一生成元ポリシー）。そのため、必要な場合には一種のプロキシサーバを介してアクセスする手法、Adobe Flashを使う手法、動的にscript要素を生成する手法などが用いられる。JSONPも参照。
+文法 [編集]
+
+Hello world [編集]
+JavaScriptは言語仕様として標準ストリームを備えていないため、Hello worldプログラムの書き方は処理系によって異なる。
+alert("Hello, world!"); // 警告を表示
+console.log("Hello, world!"); // JavaScriptコンソールが有効な場合
+document.write("Hello, world!"); // DOM以前のやや古い書き方
+// <div id="stdout"></div>という要素が存在するとして…
+document.getElementById('stdout').textContent = "Hello, world!"; // DOMを利用した書き方
+document.getElementById('stdout').innerText   = "Hello, world!"; // ただしInternet ExplorerにはtextContentが無いため、innerTextを使用
+print("Hello, world!"); // SpiderMonkeyなど
+その他 [編集]
+/*
+ * DOM以前のJavaScript
+ */
+ 
+var username = prompt("名前を入力して下さい", ""); // 入力を要求する
+ 
+if ( username != "" ) { // 入力があった場合
+    document.write(username, "さん、ようこそ！"); // 画面に出力
+}
+else { // 入力がなかった場合
+    document.write("名無しさん、ようこそ！"); // 画面に出力
+}
+/*
+ * JavaScriptでの継承の方法
+ */
+ 
+function Dog() { // Dogクラスのコンストラクタ -- ただの関数である
+    this.state     = "sitting";  // stateプロパティを設定
+    this.showState = function(){ // showStateメソッドを定義
+        alert("I am " + this.state + ".");
+    };
+}
+ 
+var hachi = new Dog(); // Dogクラスからインスタンスhachiを生成
+hachi.showState();     // "I am sitting." が出力される
+ 
+function LazyDog() { // LazyDogクラスのコンストラクタ
+    this.state = "sleeping..."; // stateプロパティをオーバーライド
+}
+ 
+LazyDog.prototype = new Dog(); // LazyDogはDogを継承（インスタンスを継承することに注意）
+ 
+var pochi = new LazyDog(); // LazyDogからインスタンスpochiを作成
+pochi.showState();         // "I am sleeping..." が出力される。
+JavaScriptでは、クラスはコンストラクタによって定義される。プロトタイプベースのオブジェクト指向プログラミング言語では、原型（プロトタイプ）となるインスタンスを継承して新しいクラスを作る。そのため、継承を行うには少なくとも1つのインスタンスを生成する必要がある。
+DOM [編集]
+
+DOMとは、HTMLやXHTML (XML) で書かれたドキュメントにアクセスするためのAPIである。DOMは多くのプログラミング言語でライブラリやモジュールとして実装されているが、ウェブブラウザと統合しているJavaScriptの処理系では特に言語仕様として組み込まれており[要出典]。（ただし、SpiderMonkeyなど単体のJavaScriptエンジンには組み込まれていない）、DOMオブジェクトを介してアクセスできる。
+バージョンとブラウザの対応表 [編集]
+
+バージョン   日付  規格  Netscape
+Navigator   Mozilla
+Firefox Internet
+Explorer    Opera   Safari  Google
+Chrome
+1.0 1996年3月 
+
+2.0     3.0         
+1.1 1996年8月     3.0                 
+1.2 1997年7月     4.0-4.05                    
+1.3 1998年10月    ECMA-262 1st edition / ECMA-262 2nd edition 4.06-4.7x       4.0 5.0     
+1.4         Netscape
+Server          6.0     
+1.5 2000年11月    ECMA-262 3rd edition    6.0 1.0 5.5 (JScript 5.5),
+6.0 (JScript 5.6),
+7.0 (JScript 5.7),
+8.0 (JScript 6.0)           
+1.6 2005年11月    1.5 + Array extras + Array and String generics + E4X    7.0-8.0 1.5     7.0-9.0 3.0, 3.1    
+1.7 2006年10月    1.6 + Pythonic generators + Iterators + let     2.0         3.2-5.1 1.0-19.0
+1.8 2008年7月 1.7 + Generator expressions + Expression closures       3.0             
+1.8.1       1.8 + Minor Updates     3.5             
+1.9     1.8.1 + ECMAScript 5[11] Compliance     4.0-11.0                
+[12]
+JavaScriptライブラリ [編集]
+
+代表的なJavaScriptライブラリは以下のとおり。
+AJAJA
+AngularJS
+Dojo Toolkit
+Ext JS
+Google Closure Tools
+game.js
+Google Web Toolkit (GWT)
+Impact
+jQuery
+mario.js
+MochiKit
+MooTools
+Prototype JavaScript Framework (prototype.js)
+script.aculo.us
+Spry
+The Yahoo! User Interface Library (YUI)
+関連項目 [編集]
+
+ECMAScript
+ActionScript
+DMDScript
+JScript
+Document Object Model (DOM) - ダイナミックHTML - スタイルシート
+Ajax
+JavaScript Object Notation (JSON) - JavaScriptにおけるオブジェクトの記法をベースとした軽量なデータ記述言語。
+JSONP
+ブックマークレット
+VBScript
+ActiveX
+Dart [編集]
+GoogleがJavaScriptの欠点を補うか、或いは新たな言語を開発するかを検討し、2011年に最初のα版が公開された新しいウェブスクリプティング言語としてDartが存在する。2012年3月現在に於いても言語仕様の議論と最初の公式リリースへ向けた改良や検討が続けられている。デファクトスタンダードとしてのJavaScriptを完全に置き換える事を目的としており、HTML5やCSS3と言った今後のウェブ標準の動向と合わせて注目が集まっている。
+Dart
+脚注 [編集]
+
+[ヘルプ]
+^ JavaScript 第5版（オライリー・ジャパン、2007）P2。
+^ ECMA-262 第5版 2.Confermance
+^ DOMはW3Cが標準化している。ECMA-262にはDOMへの言及はない。
+^ 例えばAdobe Acrobatは、JavaScriptによるマクロ機能を搭載している。
+^ Web Workers
+^ Marc Andreessen. “INNOVATORS OF THE NET: BRENDAN EICH AND JAVASCRIPT”. 2008年1月22日閲覧。
+^ a b “NETSCAPE AND SUN ANNOUNCE JAVASCRIPT, THE OPEN, CROSS-PLATFORM OBJECT SCRIPTING LANGUAGE FOR ENTERPRISE NETWORKS AND THE INTERNET”. 2008年1月22日閲覧。
+^ ECMA 262, ISO/IEC 16262, JIS X 3060
+^ “Python and JavaScript” (英語). Brendan's Roadmap Updates (2006年2月19日). 2007年9月5日閲覧。
+^ JavaScript 2.0はECMAScript 3.1ベースに、ECMAScript 4は譲歩 - マイコミジャーナル
+^ 後藤大地 (2009年12月9日). “JavaScriptのブラウザ非互換に解決のみとおし”. journal.mycom.co.jp. 2009年12月9日閲覧。
+^ John Resig. “Versions of JavaScript”. Ejohn.org. 2009年5月19日閲覧。
+外部リンク [編集]
+
+    ウィキブックスにJavaScript関連の解説書・教科書があります。
+英語
+Standard ECMA-262
+JavaScript - MDC
+日本語
+JScript - Microsoft
+JavaScript - MDC - Mozilla
+[隠す]
+表・話・編・歴
+JavaScript
+コード解析   
+JavaScriptLint · JSHint（英語版） · JSLint（英語版）
+コンパイラ   
+CoffeeScript · Google Closure Compiler（英語版） · Google Web Toolkit · Morfik（英語版） · Script#
+概念  
+Ajax · Client-side（英語版） · JavaScriptライブラリ（英語版） · Dynamic HTML · JavaScript構文（英語版） · Unobtrusive JavaScript（英語版）
+デバッガ    
+Firebug · Opera Dragonfly（英語版） · Microsoft Script Editor（英語版） · Microsoft Script Debugger（英語版） · Microsoft Visual Studio · Microsoft Visual Web Developer Express · Venkman（英語版） · Web Inspector
+Docジェネレータ   
+JSDoc（英語版）
+関連言語    
+ActionScript · ECMAScript · JavaScript OSA（英語版） · JScript · VBScript
+JavaScriptを生成する言語   
+CoffeeScript · Dart · Haxe · JSX · Kotlin
+関連テクノロジー    
+Cascading Style Sheets · Document Object Model · HTML · JSON
+リソース    
+JSAN（英語版） · NuGet
+サーバー側   
+Active Server Pages · CommonJS（英語版） · Node.js · Wakanda（英語版）
+ユニットテスト 
+JSUnit（英語版）
+カテゴリ: JavaScriptスクリプト言語
+案内メニュー
+アカウント作成ログインページノート閲覧編集履歴表示
+
+メインページ
+コミュニティ・ポータル
+最近の出来事
+新しいページ
+最近の更新
+おまかせ表示
+練習用ページ
+アップロード (ウィキメディア・コモンズ)
+ヘルプ
+ヘルプ
+井戸端
+お知らせ
+バグの報告
+寄付
+ウィキペディアに関するお問い合わせ
+ツールボックス
+他言語版
+Afrikaans
+العربية
+Azərbaycanca
+Žemaitėška
+Беларуская
+Беларуская (тарашкевіца)‎
+Български
+বাংলা
+ᨅᨔ ᨕᨘᨁᨗ
+Català
+Česky
+Чӑвашла
+Dansk
+Deutsch
+Ελληνικά
+English
+Esperanto
+Español
+Eesti
+Euskara
+فارسی
+Suomi
+Français
+Galego
+עברית
+हिन्दी
+Hrvatski
+Magyar
+Հայերեն
+Interlingua
+Bahasa Indonesia
+Íslenska
+Italiano
+Basa Jawa
+ქართული
+Қазақша
+ភាសាខ្មែរ
+한국어
+Lietuvių
+Latviešu
+Македонски
+മലയാളം
+Монгол
+मराठी
+Bahasa Melayu
+مازِرونی
+Nederlands
+Norsk (bokmål)‎
+Polski
+Português
+Română
+Русский
+Саха тыла
+සිංහල
+Simple English
+Slovenčina
+Slovenščina
+Shqip
+Српски / srpski
+Svenska
+தமிழ்
+Тоҷикӣ
+ไทย
+Türkmençe
+Türkçe
+Українська
+اردو
+Tiếng Việt
+中文
+粵語
+最終更新 2012年12月31日 (月) 04:42 （日時は個人設定で未設定ならばUTC）。
+テキストはクリエイティブ・コモンズ 表示-継承ライセンスの下で利用可能です。追加の条件が適用される場合があります。詳細は利用規約を参照してください。
+プライバシー・ポリシーウィキペディアについて免責事項モバイルビュー 
+    </div>
+    </div>
+    <form>
+    <button type="button" value="fixedScroll" id="fs">fixedScroll</button>
+    <button type="button" value="relScroll" id="rs">relScroll</button>
+    </form>
+    <script type="text/javascript">
+    var _class = "cm.webComponent.Scroll";
+    document.title = _class;
+    cm.Class.load(_class, "cm.domImpl.ElementAnalyzer",
+        function main()
+        {
+            var _test = cm.dom.d.getElementById("scrollTest");
+            _test.style.marginTop = "400px";
+            var s = new cm.webComponent.Scroll();
+            s.addElement(_test);
+            
+            var _a = new cm.domImpl.ElementAnalyzer();
+            _a.dumpAsHtmlElementObject(_test);
+            
+            var _fsBtn = cm.dom.d.getElementById("fs");
+            cm.dom.addEventListener(cm.event.Event.CLICK, _fsBtn, function(){
+                s.to(_test, .5);
+            }, true);
+            var _rsBtn = cm.dom.d.getElementById("rs");
+            cm.dom.addEventListener(cm.event.Event.CLICK, _rsBtn, function(){
+                s.by(_test, .01);
+            }, true);
+        });
+    </script>
+    <script>if (location.hostname == "127.0.0.1") { document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=2"></' + 'script>') }</script>
+</body>
+</html>

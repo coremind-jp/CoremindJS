@@ -1,0 +1,124 @@
+<html>
+<head>
+    <script type="text/javascript" src="../coremind.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+    var _class = "cm.Class";
+    document.title = _class;
+    cm.log.d("TEST[using class]");
+    cm.Class.load(
+        "cm.core.TestSubClass",
+        function main()
+        {
+            cm.log.d("TEST[dump class object]");
+            cm.log.d(cm.core.TestSubClass);
+            cm.log.d(cm.Class.get("cm.core.TestSubClass"));
+            
+            cm.log.d("TEST[dump static property]");
+            cm.log.d(
+                cm.core.TestSubClass.testStaticProp, " ",
+                cm.core.TestSubClass.evalProp);
+                
+            cm.log.d("TEST[create sub class]");
+            var _subClassInstance0 = new cm.core.TestSubClass("argumentsTest1", 55, 66);
+            var _subClassInstance1 = new cm.core.TestSubClass("argumentsTest2", 11, 22);
+            
+            cm.log.d("TEST[instance equal]");
+            cm.log.d(_subClassInstance0.equal(_subClassInstance0));
+            cm.log.d(_subClassInstance0.equal(_subClassInstance1));
+            
+            cm.log.d("TEST[class equal]");
+            var _baseObject = new cm.core.BaseObject();
+            cm.log.d(cm.core.TestSubClass.equal(_subClassInstance0));
+            cm.log.d(cm.core.TestSubClass.equal(_baseObject));
+            cm.log.d(cm.core.BaseObject.equal(_subClassInstance0));
+            cm.log.d(cm.core.BaseObject.equal(_baseObject));
+            
+            cm.Class.profile();
+            
+            cm.log.d("TEST[destroy instance]");
+            _subClassInstance0.destroy();
+            _subClassInstance1.destroy();
+            _baseObject.destroy();
+            
+            cm.Class.profile();
+            
+            
+            cm.log.d("TEST[create Class]");
+            cm.Class.create({
+                $name:"cm.A",
+                $define:{
+                    A:function() { this.log("initialize A", this.tag); },
+                    testMethod0:function(arg) { this.log("cm.A testMethod0", arg); },
+                    testMethod1:function(arg) { this.log("cm.A testMethod1", arg); },
+                    destroy:function() { this.log("destroy A", this.tag); }
+                }
+            });
+            cm.log.d("TEST[extends Class]");
+            cm.Class.create({
+                $name:"cm.B",
+                $extends:"cm.A",
+                $define:{
+                    B:function() { this.log("initialize B", this.tag); },
+                    testMethod0:function(arg) {
+                        this.log("cm.B testMethod0", arg);
+                        this.$super("testMethod0")(arg);
+                    },
+                    testMethod1:function(arg) {
+                        this.log("cm.B testMethod1", arg);
+                        this.$super("testMethod1")(arg);
+                    },
+                    destroy:function() { this.log("destroy B", this.tag); }
+                }
+            });
+            cm.Class.create({
+                $name:"cm.C",
+                $extends:"cm.B",
+                $define:{
+                    C:function() { this.log("initialize C", this.tag); },
+                    testMethod0:function(arg) {
+                        this.log("cm.C testMethod0", arg);
+                        this.$super("testMethod1")(arg);
+                        this.$super("testMethod0")(arg);
+                    },
+                    destroy:function() { this.log("destroy C", this.tag); }
+                }
+            });
+            cm.Class.create({
+                $name:"cm.D",
+                $extends:"cm.C",
+                $define:{
+                    D:function()
+                    {
+                        this.log("initialize D", this.tag);
+                        this.propA = new cm.C();
+                        this.propB = {
+                            propBHash0: new cm.B(),
+                            propBHash1: "pj"
+                        }
+                        this.propC = [
+                            new cm.B(),
+                            new cm.A(),
+                            new cm.core.BaseObject()
+                        ];
+                    },
+                    testMethod:function(arg) {
+                        this.log("cm.D method", arg);
+                        this.$super("testMethod0")(arg);
+                    },
+                    destroy:function() { this.log("destroy D", this.tag); }
+                }
+            });
+            
+            var d = new cm.D();
+            d.tag = "Tag TEST.";
+            cm.log.d("TEST[$super method]");
+            d.testMethod("testMethod arg");
+            cm.log.d("TEST[$super method (retry)]");
+            d.testMethod("testMethod arg");
+            d.destroy();
+        });
+    </script>
+</body>
+</html>

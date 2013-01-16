@@ -1,0 +1,42 @@
+<html>
+<head>
+    <script type="text/javascript" src="../coremind.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+    var _class = "cm.display.Container";
+    document.title = _class;
+    cm.Class.using(_class);
+    function main()
+    {
+        var obj = new cm.display.Container();
+        cm.log.d(obj);
+        
+        cm.log.d("TEST[set fix property]");
+        obj
+            .widthFix(10)
+            .heightFix(25)
+            .setColor(0xFFFFFFFF, 1)
+            .pushColor(0x80234567, 1)
+            .setImage("./test.gif");
+        cm.log.d(obj);
+        
+        cm.log.d("TEST[dump isChanged]");
+        cm.log.d(obj.isChanged());
+        
+        cm.log.d("TEST[applied]");
+        obj.applied();
+        cm.log.d(obj.isChanged());
+        cm.log.d(obj);
+        
+        cm.log.d("TEST[set relative property]");
+        obj
+            .widthRel(40)
+            .heightRel(25);
+        cm.log.d(obj.toString());
+        
+        obj.destroy();
+    }
+    </script>
+</body>
+</html>
