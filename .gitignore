@@ -4,6 +4,6 @@ JsDoc/config
 .settings
 .DS_Store
 resource/
-roalmap.txt
+roadmap.txt
 allinone.js
 snippet.js
