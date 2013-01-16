@@ -1,4 +1,4 @@
-(function(global)　{
+(function(global) {
 global.cm = {
     /**
      * ログを関数を使用する場合true. 
