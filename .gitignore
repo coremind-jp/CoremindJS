@@ -4,3 +4,6 @@ JsDoc/config
 .settings
 .DS_Store
 resource/
+roalmap.txt
+allinone.js
+snippet.js
