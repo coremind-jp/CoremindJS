@@ -1,25 +1,20 @@
-cm.Class.create({
+cm.Class.create(
+{
     $name:"cm.motion.easingOption.ElasticOption",
-    $static:
-    {
-        baseEase:function (p) { return p*p*p*p*p*p; },//expo
-        amplitude:3
-    },
     $define:
     {
         ElasticOption:function(baseEase, amplitude)
         {
-            this.baseEase = cm.equal.isFunction(baseEase) ?
-                baseEase:
-                cm.motion.easingOption.ElasticOption.baseEase;
-            
-            this.amplitude = cm.equal.isNumber(amplitude) ?
-                amplitude:
-                cm.motion.easingOption.ElasticOption.amplitude;
+            this.mBaseEase = cm.equal.isFunction(baseEase) ? baseEase: cm.motion.Easing.ExpoIn;
+            this.mAmplitude = cm.equal.isNumber(amplitude) ? amplitude: 3;
         },
         destroy:function(){},
         
-        amplitudeFix:function(val) { this.amplitude  = val; },
-        amplitudeRel:function(val) { this.amplitude += val; }
+        baseEase:function() { return this.mBaseEase; },
+        setBaseEase:function(easing) { this.mBaseEase = easing; },
+
+        amplitude:function() { return this.mAmplitude; },
+        amplitudeAbs:function(val) { this.mAmplitude  = val; },
+        amplitudeRel:function(val) { this.mAmplitude += val; }
     }
 });
