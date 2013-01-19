@@ -39,8 +39,8 @@ cm.Class.create(
         },
         /**
          */
-        weightFix:function(val) {
-            return this._setWrapperFix("weight", val);
+        weightAbs:function(val) {
+            return this._setWrapperAbs("weight", val);
         },
         /**
          */
@@ -57,7 +57,7 @@ cm.Class.create(
         /**
          */
         setStyle:function(val) {
-            return this._setWrapperFix("style", val);
+            return this._setWrapperAbs("style", val);
         },
         
         

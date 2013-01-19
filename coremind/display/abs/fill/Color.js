@@ -6,19 +6,19 @@ cm.Class.create(
         sub:function(color1, color2)
         {
             var _result = new cm.display.abs.fill.Color();
-            _result.aFix(color1.a() - color2.a());
-            _result.rFix(color1.r() - color2.r());
-            _result.gFix(color1.g() - color2.g());
-            _result.bFix(color1.b() - color2.b());
+            _result.aAbs(color1.a() - color2.a());
+            _result.rAbs(color1.r() - color2.r());
+            _result.gAbs(color1.g() - color2.g());
+            _result.bAbs(color1.b() - color2.b());
             return _result;
         },
         add:function(color1, color2)
         {
             var _result = new cm.display.abs.fill.Color();
-            _result.aFix(color1.a() + color2.a());
-            _result.rFix(color1.r() + color2.r());
-            _result.gFix(color1.g() + color2.g());
-            _result.bFix(color1.b() + color2.b());
+            _result.aAbs(color1.a() + color2.a());
+            _result.rAbs(color1.r() + color2.r());
+            _result.gAbs(color1.g() + color2.g());
+            _result.bAbs(color1.b() + color2.b());
             return _result;
         }
     },
@@ -34,19 +34,19 @@ cm.Class.create(
         {
             this.mHex = {};
             this.mRatio = {};
-            this.argbFix(hex ? hex: 0);
+            this.argbAbs(hex ? hex: 0);
         },
         destroy:function() {},
         
         argb:function() {
             return (this.a() << 24) + this.rgb();
         },
-        argbFix:function(hex)
+        argbAbs:function(hex)
         {
-            this.aFix(hex >>> 24);
-            this.rFix(hex << 8 >>> 24);
-            this.gFix(hex << 16 >>> 24);
-            this.bFix(hex << 24 >>> 24);
+            this.aAbs(hex >>> 24);
+            this.rAbs(hex << 8 >>> 24);
+            this.gAbs(hex << 16 >>> 24);
+            this.bAbs(hex << 24 >>> 24);
             return this;
         },
         
@@ -61,8 +61,8 @@ cm.Class.create(
         a:function() {
             return this.mHex.alpha;
         },
-        aFix:function(val) {
-            return this._wrapFix("alpha", val);
+        aAbs:function(val) {
+            return this._wrapAbs("alpha", val);
         },
         aRel:function(val) {
             return this._wrapRel("alpha", val);
@@ -77,8 +77,8 @@ cm.Class.create(
         r:function() {
             return this.mHex.red;
         },
-        rFix:function(val) {
-            return this._wrapFix("red", val);
+        rAbs:function(val) {
+            return this._wrapAbs("red", val);
         },
         rRel:function(val) {
             return this._wrapRel("red", val);
@@ -93,8 +93,8 @@ cm.Class.create(
         g:function() {
             return this.mHex.green;
         },
-        gFix:function(val) {
-            return this._wrapFix("green", val);
+        gAbs:function(val) {
+            return this._wrapAbs("green", val);
         },
         gRel:function(val) {
             return this._wrapRel("green", val);
@@ -109,8 +109,8 @@ cm.Class.create(
         b:function() {
             return this.mHex.blue;
         },
-        bFix:function(val) {
-            return this._wrapFix("blue", val);
+        bAbs:function(val) {
+            return this._wrapAbs("blue", val);
         },
         bRel:function(val) {
             return this._wrapRel("blue", val);
@@ -122,7 +122,7 @@ cm.Class.create(
             return this.mRatio.blue;
         },
         
-        _wrapFix:function(prop, val)
+        _wrapAbs:function(prop, val)
         {
             val |= 0;
             val = 0 > val ? 0: 255 < val ? 255: val;

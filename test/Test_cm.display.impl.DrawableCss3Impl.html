@@ -37,7 +37,7 @@
             var ids = [
                 "testX", "testY", "testWidth", "testHieght", "testColor", "testImage", "testGradient"];
             var methods = [
-                "xRel", "yRel", "widthFix", "heightFix", "editBackgroundColor", "editBackgroundImage", "editBackgroundGradient"];
+                "xRel", "yRel", "widthAbs", "heightAbs", "editBackgroundColor", "editBackgroundImage", "editBackgroundGradient"];
             var values = [50, 50, 175, 450, 0xFF808080, "./0.gif"];
             var _s1 = new cm.display.abs.fill.Shadow(0, 0, 14, 10, 0x80FF0000);
             var _s2 = new cm.display.abs.fill.Shadow(0, 0, 14, 10, 0x8000FF00);
@@ -52,8 +52,8 @@
                 obj.cmDisplay.position.xRel(100 * i);
                 obj.cmDisplay.drawable.draw();
                 //obj.cmDisplay.container.widthRel(100).heightRel(100);
-                obj.cmDisplay.background.editColor().argbFix(0xFF808080);
-                obj.cmDisplay.container.editShape().roundFix(5);
+                obj.cmDisplay.background.editColor().argbAbs(0xFF808080);
+                obj.cmDisplay.container.editShape().roundAbs(5);
                 switch (i)
                 {
                     case 0:
@@ -67,7 +67,7 @@
                         _sO = obj;
                         break;
                     case 4:
-                        obj.cmDisplay.background.editColor().argbFix(0xFF000000 + 0xfF);
+                        obj.cmDisplay.background.editColor().argbAbs(0xFF000000 + 0xfF);
                         break;
                     case 5:
                         obj.cmDisplay.background.editImage()
@@ -76,17 +76,17 @@
                         break;
                     case 6:
                         obj.cmDisplay.container.editShape()
-                            .roundFix(40)
-                            .bottomLeftFix(15, 15);
+                            .roundAbs(40)
+                            .bottomLeftAbs(15, 15);
                         obj.cmDisplay.border
-                            .weightFix(5)
+                            .weightAbs(5)
                             .setStyle(cm.display.abs.Border.SOLID)
-                            .editColor().argbFix(0x80FF0000);
+                            .editColor().argbAbs(0x80FF0000);
                         obj.cmDisplay.background.editGradient()
                             .pushColors(new cm.display.abs.fill.Color(0xFF00FF00), 50)
                             .pushColors(new cm.display.abs.fill.Color(0xFFFFFFFF), 1)
                             .pushColors(new cm.display.abs.fill.Color(0xFF00FF00), 50)
-                            .editBeginColor().argbFix(0xFF000000);
+                            .editBeginColor().argbAbs(0xFF000000);
                         _sQ = obj;
                         break;
                     default:
@@ -141,13 +141,13 @@
             setTimeout(function(){
                 _sO.cmDisplay.filters.add(_s3);
                 _s1.editOffsetPosition().x = 100;
-                _s1.editColor().argbFix(0x800000FF);
+                _s1.editColor().argbAbs(0x800000FF);
                 _s2.editOffsetPosition().x = -100;
-                _s2.editColor().argbFix(0x8000FF00);
+                _s2.editColor().argbAbs(0x8000FF00);
                 _sO.cmDisplay.drawable.draw();
                 setTimeout(function(){
                     _s2.editOffsetPosition().y = -100;
-                    _s2.editColor().argbFix(0x80FF0000);
+                    _s2.editColor().argbAbs(0x80FF0000);
                     _s3.enabledInset();
                     _sO.cmDisplay.filters.remove(_s1);
                     _sO.cmDisplay.drawable.draw();

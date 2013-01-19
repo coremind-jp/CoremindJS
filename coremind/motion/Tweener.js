@@ -135,10 +135,10 @@ cm.Class.create(
             for(var i = 0; i < _len; i++)
                 _absObject = _absObject[_hierarchyName[i]](_targetObjectIndex);
             
-            var _to = cm.motion.Tweener.TO_COLOR.argbFix(to);
+            var _to = cm.motion.Tweener.TO_COLOR.argbAbs(to);
             var _from = cm.equal.isUndefined(from) ?
                 _absObject:
-                cm.motion.Tweener.FROM_COLOR.argbFix(from);
+                cm.motion.Tweener.FROM_COLOR.argbAbs(from);
                 
             //argb is fixed tween only.
             var _fixed = this.mFixed;

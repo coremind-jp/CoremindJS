@@ -32,7 +32,7 @@
         var ids = [
             "testX", "testY", "testWidth", "testHieght", "testColor", "testImage", "testGradient"];
         var methods = [
-            "xRel", "yRel", "widthFix", "heightFix", "editBackgroundColor", "editBackgroundImage", "editBackgroundGradient"];
+            "xRel", "yRel", "widthAbs", "heightAbs", "editBackgroundColor", "editBackgroundImage", "editBackgroundGradient"];
         var values = [50, 50, 175, 450, 0xFF808080, "./0.gif"];
         var _s1 = new cm.display.abs.fill.Shadow(0, 0, 14, 10, 0x80FF0000);
         var _s2 = new cm.display.abs.fill.Shadow(0, 0, 14, 10, 0x8000FF00);
@@ -77,7 +77,7 @@
                         .applyRound(40)
                         .setBottomLeftRound(15, 15);
                     obj.cmDisplay.border
-                        .weightFix(5)
+                        .weightAbs(5)
                         .setStyle(cm.display.abs.Border.DOT)
                         .editColor().setARGB(0x80FF0000);
                     obj.cmDisplay.background.editGradient()

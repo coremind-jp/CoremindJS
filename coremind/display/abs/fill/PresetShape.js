@@ -40,7 +40,7 @@ cm.Class.create(
         round:function() {
             return this.mGroupRound;
         },
-        roundFix:function(arc) {
+        roundAbs:function(arc) {
             this.mTopLeft.x = this.mTopLeft.y =
             this.mBottomLeft.x = this.mBottomLeft.y =
             this.mTopRight.x = this.mTopRight.y =
@@ -49,34 +49,34 @@ cm.Class.create(
         },
         
         topLeft:function() { return this.mTopLeft; },
-        topLeftFix:function(arcX, arcY) {
+        topLeftAbs:function(arcX, arcY) {
             this.mTopLeft.x = arcX < 0 ? 0: arcX;
             this.mTopLeft.y = arcX < 0 ? 0: arcX;
             return this;
         },
         topLeftRel:function(arcX, arcY) {
-            this.topLeftFix(
+            this.topLeftAbas(
                 this.mTopLeft.x + arcX,
                 this.mTopLeft.y + arcY);
             return this;
         },
         
         bottomLeft:function() { return this.mBottomLeft; },
-        bottomLeftFix:function(arcX, arcY) {
+        bottomLeftAbs:function(arcX, arcY) {
             this.mBottomLeft.x = arcX < 0 ? 0: arcX;
             this.mBottomLeft.y = arcY < 0 ? 0: arcY;
             return this;
         },
         bottomLeftRel:function(arcX, arcY)
         {
-            this.bottomLeftFix(
+            this.bottomLeftAbas(
                 this.mBottomLeft.x + arcX,
                 this.mBottomLeft.y + arcY);
             return this;
         },
         
         topRight:function() { return this.mTopRight; },
-        topRightFix:function(arcX, arcY)
+        topRightAbs:function(arcX, arcY)
         {
             this.mTopRight.x = arcX < 0 ? 0: arcX;
             this.mTopRight.y = arcY < 0 ? 0: arcY;
@@ -84,21 +84,21 @@ cm.Class.create(
         },
         topRightRel:function(arcX, arcY)
         {
-            this.topRightFix(
+            this.topRightAbas(
                 this.mTopRight.x + arcX,
                 this.mTopRight.y + arcY);
             return this;
         },
         
         bottomRight:function() { return this.mBottomRight; },
-        bottomRightFix:function(arcX, arcY) {
+        bottomRightAbs:function(arcX, arcY) {
             this.mBottomRight.x = arcX < 0 ? 0: arcX;
             this.mBottomRight.y = arcY < 0 ? 0: arcY;
             return this;
         },
         bottomRightRel:function(arcX, arcY)
         {
-            this.bottomRightFix(
+            this.bottomRightAbas(
                 this.mBottomRight.x + arcX,
                 this.mBottomRight.y + arcY);
             return this;

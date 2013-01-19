@@ -48,7 +48,6 @@ cm.Class.create(
         {
             cm.css.applyPosition(this.mContent.cmDisplay, this.mContentParentStyle);
             cm.css.applyContainer(this.mContent.cmDisplay, this.mContentParentStyle);
-            cm.css.applyBackground(this.mContent.cmDisplay, this.mContentParentStyle);
         },
         
         //Position

@@ -30,9 +30,9 @@ cm.Class.create(
             
             this.editOffsetPosition().x = isNaN(offsetPositionX) ? 5: offsetPositionX;
             this.editOffsetPosition().y = isNaN(offsetPositionY) ? 5: offsetPositionY;
-            this.radiusFix(isNaN(radius) ? 5: radius)
-            this.offsetSizeFix(isNaN(offsetSize) ? 5: offsetSize);
-            this.editColor().argbFix(color ? color: 0x80000080);
+            this.radiusAbs(isNaN(radius) ? 5: radius)
+            this.offsetSizeAbs(isNaN(offsetSize) ? 5: offsetSize);
+            this.editColor().argbAbs(color ? color: 0x80000080);
             if (inset) this.enabledInset();
         },
         destroy:function() {},
@@ -62,7 +62,7 @@ cm.Class.create(
         radius:function() {
             return this.mRadius;
         },
-        radiusFix:function(val)
+        radiusAbs:function(val)
         {
             this.enabledFlag(8);
             this.mRadius = val;
@@ -78,7 +78,7 @@ cm.Class.create(
         offsetSize:function() {
             return this.mOffsetSize;
         },
-        offsetSizeFix:function(val)
+        offsetSizeAbs:function(val)
         {
             this.enabledFlag(16);
             this.mOffsetSize = val;

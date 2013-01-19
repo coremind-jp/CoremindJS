@@ -84,7 +84,7 @@ cm.Class.create(
             return this;
         },
         timeStretch:function() { return this.mStretch; },
-        timeStretchFix:function(val) { this._timeStretch(val); },
+        timeStretchAbs:function(val) { this._timeStretch(val); },
         timeStretchRel:function(val) { this._timeStretch(val + this.mStretch); },
         _timeStretch:function(val)
         {

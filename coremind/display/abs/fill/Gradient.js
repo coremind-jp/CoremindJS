@@ -21,7 +21,8 @@ cm.Class.create(
             this.mColors = [];
             this.mWeight = [];
             this.mThreshold = [];
-            
+            this.mDegree = 0;
+
             this.clear = this._clear;
             this.editBeginColor = this.beginColor;
             this.pushColors = this._pushColors;
@@ -71,12 +72,22 @@ cm.Class.create(
             return this.mColors[i];
         },
         
+        degree:function() {
+            return this.mDegree;
+        },
+        degreeAbs:function(degree) {
+            this.mDegree = degree;
+        },
+        degreeRel:function(degree) {
+            this.mDegree += degree;
+        }
+
         clear:function() {
             this._runtimeInitialize();
             this.clear();
         },
         _clear:function() {
-            this.mBeginColor.argbFix(0);
+            this.mBeginColor.argbAbs(0);
             this.mColors.length = this.mWeight.length = this.mThreshold.length = 0;
         },
         

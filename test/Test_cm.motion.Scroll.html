@@ -348,7 +348,7 @@ Tiếng Việt
     </div>
     </div>
     <form>
-    <button type="button" value="fixedScroll" id="fs">fixedScroll</button>
+    <button type="button" value="absScroll" id="as">absScroll</button>
     <button type="button" value="relScroll" id="rs">relScroll</button>
     </form>
     <script type="text/javascript">
@@ -365,8 +365,8 @@ Tiếng Việt
             var _a = new cm.domImpl.ElementAnalyzer();
             _a.dumpAsHtmlElementObject(_test);
             
-            var _fsBtn = cm.dom.d.getElementById("fs");
-            cm.dom.addEventListener(cm.event.Event.CLICK, _fsBtn, function(){
+            var _asBtn = cm.dom.d.getElementById("as");
+            cm.dom.addEventListener(cm.event.Event.CLICK, _asBtn, function(){
                 s.to(_test, .5);
             }, true);
             var _rsBtn = cm.dom.d.getElementById("rs");

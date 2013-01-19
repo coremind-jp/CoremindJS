@@ -2,7 +2,8 @@ cm.Class.create(
     "cm.core.BrowserInterface",
 {
     /** @name cm.domImpl */
-    $name:"cm.domImpl.ElementAnalyzer",
+    $name:"cm.webComponent.ElementAnalyzer",
+    $singleton:true,
     $static:{
         propertys:{
             domByHtml:{
@@ -105,10 +106,10 @@ cm.Class.create(
                 _selector.id = "documentID";
             }
         },
-        dumpStyle:function()
+        dumpStyle:function(element)
         {
             var _selector = this._getSelectElement("style");
-            for (var p in cm.dom.d.style)
+            for (var p in element.style)
             {
                 var _newOption = cm.dom.d.createElement("option");
                 _newOption.text ?

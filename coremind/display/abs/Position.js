@@ -38,8 +38,8 @@ cm.Class.create(
          * x座標を絶対値で設定します.
          * @param {Number} val 値
          */
-        xFix:function(val) {
-            return this._setWrapperFix("x", val);
+        xAbs:function(val) {
+            return this._setWrapperAbs("x", val);
         },
         /**
          * x座標を相対値で設定します.
@@ -60,8 +60,8 @@ cm.Class.create(
          * y座標を絶対値で設定します.
          * @param {Number} val 値
          */
-        yFix:function(val) {
-            return this._setWrapperFix("y", val);
+        yAbs:function(val) {
+            return this._setWrapperAbs("y", val);
         },
         /**
          * y座標を相対値で設定します.
@@ -82,8 +82,8 @@ cm.Class.create(
          * y座標を絶対値で設定します.
          * @param {Number} val 値
          */
-        zFix:function(val) {
-            return this._setWrapperFix("z", val);
+        zAbs:function(val) {
+            return this._setWrapperAbs("z", val);
         },
         /**
          * y座標を相対値で設定します.

@@ -45,7 +45,27 @@ cm.Class.create(
         /*
          * style context wrapper
          * */
-        gradientToString:function() {},
+        gradientToString:function(gradient)
+        {
+            var _beginColor = gradient.beginColor();
+            var _colors = gradient.colors();
+            var _thresholds = gradient.threshold();
+            var _color, _threshold = 0;
+            var _result = cm.string.concat(
+                "liner-gradient(linear, left bottom, left top, from(",
+                this.colorToRgbaString(_beginColor),
+                ")");
+                
+            for(var i = 0, len = _colors.length - 1; i < len; i ++)
+            {
+                _color = _colors[i];
+                _threshold += _thresholds[i];
+                _result += cm.string.concat(", color-stop(", _threshold, ", ", this.colorToRgbaString(_color), ")");
+            }
+            _color = _colors[_colors.length - 1];
+            _result += cm.string.concat(", to(", this.colorToRgbaString(_color), "))");
+            return _result;
+        },
         
         applyPosition:function(cmDisplay, style)
         {
@@ -58,14 +78,14 @@ cm.Class.create(
                 case "relative":
                     style.position = "relative";
                     _position
-                        .xFix(parseInt(style.left))
-                        .yFix(parseInt(style.top));
+                        .xAbs(parseInt(style.left))
+                        .yAbs(parseInt(style.top));
                     break;
                 case "fixed":
                 case "absolute":
                     _position
-                        .xFix(parseInt(cm.dom.getX(cmDisplay.parent)))
-                        .yFix(parseInt(cm.dom.getY(cmDisplay.parent)));
+                        .xAbs(parseInt(cm.dom.getX(cmDisplay.parent)))
+                        .yAbs(parseInt(cm.dom.getY(cmDisplay.parent)));
                     break;
             }
             _position.applied();
@@ -74,43 +94,13 @@ cm.Class.create(
         {
             var _container = cmDisplay.container;
             _container
-                .widthFix(parseInt(style.width))
-                .heightFix(parseInt(style.Height))
-                .contentWidthFix(cm.dom.getContentWidth(cmDisplay.parent))
-                .contentHeightFix(cm.dom.getContentHeight(cmDisplay.parent))
+                .widthAbs(parseInt(style.width))
+                .heightAbs(parseInt(style.Height))
+                .contentWidthAbs(cm.dom.getContentWidth(cmDisplay.parent))
+                .contentHeightAbs(cm.dom.getContentHeight(cmDisplay.parent))
                 .applied();
             this.applyShape(_container.shape(), style);
         },
-        applyShape:function(presetShape, style)
-        {
-            presetShape.topLeftFix(parseInt(style.borderTopLeftRadius));
-            presetShape.bottomLeftFix(parseInt(style.borderBottomLeftRadius));
-            presetShape.topRightFix(parseInt(style.borderTopRightRadius));
-            presetShape.bottomRightFix(parseInt(style.borderBottomRightRadius));
-        },
-        applyBackground:function(cmDisplay, style)
-        {
-            var _background = cmDisplay.background;
-        },
-        applyColor:function(color, style)
-        {
-            var val = new String(style.backgroundColor);
-            if (val == "transparent"
-            ||  val == "")
-                color.argbFix(0);
-            else
-            {
-                var _val = val.subString(val.indexOf("(") + 1, val.length - 2).split(",");
-                var _member = ["rFix", "gFix", "bFix", "aFix"];
-                for (var i = 0, len = _val.length; i < len; i++)
-                {
-                    var _colorInt = i < 3 ? parseInt(_val[i]): Number(_val[i]);
-                    this.log(_colorInt);
-                    color[_member[i]](_colorInt);
-                }
-            }
-        },
-        
         colorToRgbString:function(color) {
             return cm.string.concat("rgb(", color.r(), ",", color.g(), ",", color.b(), ")");
         },

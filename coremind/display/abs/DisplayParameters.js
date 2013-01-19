@@ -43,7 +43,7 @@ cm.Class.create(
                 _hierarchyName[i] = "edit" + cm.string.capitalize(_hierarchyName[i]);
             }
             from = cm.equal.isUndefined(from) ? _absObject[_propertyName](): from;
-            _propertyName = _propertyName + "Fix";
+            _propertyName = _propertyName + "Abs";
             
             return {
                 begin:from,
@@ -111,7 +111,7 @@ cm.Class.create(
          * @param {Number} 設定値
          * @return {Object} このオブジェクト
          */
-        _setWrapperFix:function(propName, val)
+        _setWrapperAbs:function(propName, val)
         {
             var _params = this.mParams;
             var _idxObject = cm.display.abs[this.className].PROP_INDEX;

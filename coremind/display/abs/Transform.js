@@ -50,8 +50,8 @@ cm.Class.create(
          * x座標を絶対値で設定します.
          * @param {Number} val 値
          */
-        xFix:function(val) {
-            return this._setWrapperFix("x", val);
+        xAbs:function(val) {
+            return this._setWrapperAbs("x", val);
         },
         /**
          * x座標を相対値で設定します.
@@ -72,8 +72,8 @@ cm.Class.create(
          * y座標を絶対値で設定します.
          * @param {Number} val 値
          */
-        yFix:function(val) {
-            return this._setWrapperFix("y", val);
+        yAbs:function(val) {
+            return this._setWrapperAbs("y", val);
         },
         /**
          * y座標を相対値で設定します.
@@ -94,8 +94,8 @@ cm.Class.create(
          * y座標を絶対値で設定します.
          * @param {Number} val 値
          */
-        zFix:function(val) {
-            return this._setWrapperFix("z", val);
+        zAbs:function(val) {
+            return this._setWrapperAbs("z", val);
         },
         /**
          * y座標を相対値で設定します.
@@ -116,8 +116,8 @@ cm.Class.create(
          * x軸のスケールを絶対値で設定します.
          * @param {Number} val 値
          */
-        scaleXFix:function(val) {
-            return this._setWrapperFix("scaleX", val);
+        scaleXAbs:function(val) {
+            return this._setWrapperAbs("scaleX", val);
         },
         /**
          * x軸のスケールを相対値で設定します.
@@ -138,8 +138,8 @@ cm.Class.create(
          * y軸のスケールを絶対値で設定します.
          * @param {Number} val 値
          */
-        scaleYFix:function(val) {
-            return this._setWrapperFix("scaleY", val);
+        scaleYAbs:function(val) {
+            return this._setWrapperAbs("scaleY", val);
         },
         /**
          * y軸のスケールを相対値で設定します.
@@ -160,8 +160,8 @@ cm.Class.create(
          * z軸のスケールを絶対値で設定します.
          * @param {Number} val 値
          */
-        scaleZFix:function(val) {
-            return this._setWrapperFix("scaleZ", val);
+        scaleZAbs:function(val) {
+            return this._setWrapperAbs("scaleZ", val);
         },
         /**
          * z軸のスケールを相対値で設定します.
@@ -182,8 +182,8 @@ cm.Class.create(
          * x軸の回転値を設定します.
          * @param {Number} val 値
          */
-        rotationXFix:function(val) {
-            return this._setWrapperFix("rotationX", val);
+        rotationXAbs:function(val) {
+            return this._setWrapperAbs("rotationX", val);
         },
         /**
          * x軸の回転値を設定します.
@@ -204,8 +204,8 @@ cm.Class.create(
          * y軸の回転値を絶対値で設定します.
          * @param {Number} val 値
          */
-        rotationYFix:function(val) {
-            return this._setWrapperFix("rotationY", val);
+        rotationYAbs:function(val) {
+            return this._setWrapperAbs("rotationY", val);
         },
         /**
          * y軸の回転値を相対値で設定します.
@@ -226,8 +226,8 @@ cm.Class.create(
          * z軸の回転値を絶対値で設定します.
          * @param {Number} val 値
          */
-        rotationZFix:function(val) {
-            return this._setWrapperFix("rotationZ", val);
+        rotationZAbs:function(val) {
+            return this._setWrapperAbs("rotationZ", val);
         },
         /**
          * z軸の回転値を相対値で設定します.
@@ -248,8 +248,8 @@ cm.Class.create(
          * x軸の基準値を絶対値で設定します.
          * @param {Number} val 値
          */
-        originXFix:function(val) {
-            return this._setWrapperFix("originX", val);
+        originXAbs:function(val) {
+            return this._setWrapperAbs("originX", val);
         },
         /**
          * x軸の基準値を相対値で設定します.
@@ -270,8 +270,8 @@ cm.Class.create(
          * x軸の基準値を絶対値で設定します.
          * @param {Number} val 値
          */
-        originYFix:function(val) {
-            return this._setWrapperFix("originY", val);
+        originYAbs:function(val) {
+            return this._setWrapperAbs("originY", val);
         },
         /**
          * x軸の基準値を相対値で設定します.

@@ -57,8 +57,8 @@ cm.Class.create(
          * 横幅を絶対値で設定します.
          * @param {Number} val 値
          */
-        widthFix:function(val) {
-            return this._setWrapperFix("width", val);
+        widthAbs:function(val) {
+            return this._setWrapperAbs("width", val);
         },
         /**
          * 横幅を相対値で設定します.
@@ -79,8 +79,8 @@ cm.Class.create(
          * 縦幅を絶対値で設定します.
          * @param {Number} val 値
          */
-        heightFix:function(val) {
-            return this._setWrapperFix("height", val);
+        heightAbs:function(val) {
+            return this._setWrapperAbs("height", val);
         },
         /**
          * 縦幅を相対値で設定します.
@@ -101,8 +101,8 @@ cm.Class.create(
          * 横幅を絶対値で設定します.
          * @param {Number} val 値
          */
-        contentWidthFix:function(val) {
-            return this._setWrapperFix("contentWidth", val);
+        contentWidthAbs:function(val) {
+            return this._setWrapperAbs("contentWidth", val);
         },
         /**
          * 横幅を相対値で設定します.
@@ -123,8 +123,8 @@ cm.Class.create(
          * 縦幅を絶対値で設定します.
          * @param {Number} val 値
          */
-        contentHeightFix:function(val) {
-            return this._setWrapperFix("contentHeight", val);
+        contentHeightAbs:function(val) {
+            return this._setWrapperAbs("contentHeight", val);
         },
         /**
          * 縦幅を相対値で設定します.
