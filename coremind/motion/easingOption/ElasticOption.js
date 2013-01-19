@@ -5,7 +5,7 @@ cm.Class.create(
     {
         ElasticOption:function(baseEase, amplitude)
         {
-            this.mBaseEase = cm.equal.isFunction(baseEase) ? baseEase: cm.motion.Easing.ExpoIn;
+            this.mBaseEase = cm.equal.isFunction(baseEase) ? baseEase: function (p) { return p*p*p*p*p*p; };//expo
             this.mAmplitude = cm.equal.isNumber(amplitude) ? amplitude: 3;
         },
         destroy:function(){},
