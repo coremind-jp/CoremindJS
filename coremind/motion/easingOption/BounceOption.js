@@ -1,27 +1,20 @@
 cm.Class.create({
     $name:"cm.motion.easingOption.BounceOption",
-    $static:
-    {
-        bounceNum:3,
-        reflection:.25
-    },
     $define:
     {
         BounceOption:function(bounceNum, reflection)
         {
-            this.bounceNum = cm.equal.isNumber(bounceNum) ?
-                bounceNum:
-                cm.motion.easingOption.ElasticOption.bounceNum;
-            
-            this.reflection = cm.equal.isNumber(reflection) ?
-                reflection:
-                cm.motion.easingOption.ElasticOption.reflection;
+            this.mBounceNum = cm.equal.isNumber(bounceNum) ? bounceNum: 3;
+            this.mRreflection = cm.equal.isNumber(reflection) ? reflection: .25;
         },
         destroy:function(){},
         
-        bounceNumFix:function(val) { this.bounceNum  = val; },
-        bounceNumRel:function(val) { this.bounceNum += val; },
-        reflectionFix:function(val) { this.reflection  = val; },
-        reflectionRel:function(val) { this.reflection += val; }
+        bounceNum:function() { return this.mBounceNum; },
+        bounceNumAbs:function(val) { this.mBounceNum  = val; },
+        bounceNumRel:function(val) { this.mBounceNum += val; },
+
+        reflection:function(val) { this.mRreflection = val; },
+        reflectionAbs:function(val) { this.mRreflection  = val; },
+        reflectionRel:function(val) { this.mRreflection += val; }
     }
 });
