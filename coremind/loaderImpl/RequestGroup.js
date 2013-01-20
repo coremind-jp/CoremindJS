@@ -24,8 +24,11 @@ cm.Class.create(
         addRequire:function(url, param, option)
         {
             if (this.mIsRunning)
-                cm.log.e("addRequire is canceled. this object is aleady run.");
-            
+            {                
+                cm.log.w("addRequire is canceled. this object is aleady run.");
+                return;
+            }
+
             url = cm.dom.toAbsolutePath(url)
             if (!this._hasUrl(url))
             {
@@ -37,7 +40,10 @@ cm.Class.create(
         removeRequire:function(url)
         {
             if (this.mIsRunning)
-                cm.log.e("removeRequire is canceled. this object is aleady run.");
+            {                
+                cm.log.w("removeRequire is canceled. this object is aleady run.");
+                return;
+            }
             
             url = cm.dom.toAbsolutePath(url)
             if (this._hasUrl(url))
@@ -57,7 +63,7 @@ cm.Class.create(
         },
         
         /* from LoaderInterface be call method */
-        notifyLoading:function() { this.mIsRunning = true; },
+        beginLoad:function() { this.mIsRunning = true; },
         shiftRequire:function()
         {
             for (var p in this.mRequires)
