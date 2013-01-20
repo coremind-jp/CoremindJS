@@ -1,5 +1,6 @@
 <html>
 <head>
+    <script type="text/javascript" src="../manifest.js"></script>
     <script type="text/javascript" src="../coremind.js"></script>
 </head>
 <body>
@@ -8,95 +9,137 @@
     document.title = _class;
     cm.log.d("TEST[using class]");
     cm.Class.load(
-        "cm.core.TestSubClass",
+        "cm.test.TestSubClass",
         function main()
         {
-            cm.log.d("TEST[dump class object]");
-            cm.log.d(cm.core.TestSubClass);
-            cm.log.d(cm.Class.get("cm.core.TestSubClass"));
+            cm.log.d("クラスオブジェクトへの参照チェック");
+            cm.assert("フルパスでの参照", function() {
+                return cm.test.TestSubClass;
+            }, "cm.test.TestSubClass");
+            cm.assert("cm.Class.getでの参照", function() {
+                return cm.Class.get("cm.test.TestSubClass");
+            }, "cm.test.TestSubClass");
             
-            cm.log.d("TEST[dump static property]");
-            cm.log.d(
-                cm.core.TestSubClass.testStaticProp, " ",
-                cm.core.TestSubClass.evalProp);
-                
-            cm.log.d("TEST[create sub class]");
-            var _subClassInstance0 = new cm.core.TestSubClass("argumentsTest1", 55, 66);
-            var _subClassInstance1 = new cm.core.TestSubClass("argumentsTest2", 11, 22);
+            cm.log.d("クラスオブジェクトのスタティックメンバへの参照チェック");
+            cm.log.d("testStaticProp:", cm.test.TestSubClass.testStaticProp);
+            cm.log.d("evalProp:", cm.test.TestSubClass.evalProp);
+
+            //インスタンスの生成
+            var _subClassInstance0 = new cm.test.TestSubClass("argumentsTest1", 55, 66);
+            var _subClassInstance1 = new cm.test.TestSubClass("argumentsTest2", 11, 22);
             
-            cm.log.d("TEST[instance equal]");
-            cm.log.d(_subClassInstance0.equal(_subClassInstance0));
-            cm.log.d(_subClassInstance0.equal(_subClassInstance1));
-            
-            cm.log.d("TEST[class equal]");
+            cm.log.d("インスタンスの評価チェック");
+            cm.assert("_subClassInstance0 === _subClassInstance0", function() {
+                return _subClassInstance0.equal(_subClassInstance0);
+            }, true);
+            cm.assert("_subClassInstance0 === _subClassInstance1", function() {
+                return _subClassInstance0.equal(_subClassInstance1);
+            }, false);
+
+            //異なるクラスのインスタンスを用意
             var _baseObject = new cm.core.BaseObject();
-            cm.log.d(cm.core.TestSubClass.equal(_subClassInstance0));
-            cm.log.d(cm.core.TestSubClass.equal(_baseObject));
-            cm.log.d(cm.core.BaseObject.equal(_subClassInstance0));
-            cm.log.d(cm.core.BaseObject.equal(_baseObject));
+
+            cm.log.d("クラスの評価チェック");
+            cm.assert("_subClassInstance0はcm.test.TestSubClassのインスタンスである", function() {
+                return cm.test.TestSubClass.equal(_subClassInstance0);
+            }, true);
+            cm.assert("_baseObjectはcm.test.TestSubClassのインスタンスではない", function() {
+                return cm.test.TestSubClass.equal(_baseObject);
+            }, false);
+            cm.assert(cm.string.concat(
+                "_subClassInstance0はcm.core.BaseObjectのインスタンスではない\n",
+                "しかしcm.test.TestSubClassはcm.core.BaseObjectを継承している為\n",
+                "cm.core.BaseObjectのインスタンスとして扱える"), function() {
+                return cm.core.BaseObject.equal(_subClassInstance0);
+            }, true);
+            cm.assert("_baseObjectはcm.core.BaseObjectのインスタンスである", function() {
+                return cm.core.BaseObject.equal(_baseObject);
+            }, true);
             
+            cm.log.d("破棄前のインスタンス数をトレース");
             cm.Class.profile();
-            
-            cm.log.d("TEST[destroy instance]");
+
+            //インスタンスの破棄
             _subClassInstance0.destroy();
             _subClassInstance1.destroy();
             _baseObject.destroy();
             
+            cm.log.d("破棄後のインスタンス数をトレース");
             cm.Class.profile();
             
-            
-            cm.log.d("TEST[create Class]");
-            cm.Class.create({
+            //ランタイム時の新規クラスの追加
+            cm.Class.create(
+            {
                 $name:"cm.A",
                 $define:{
-                    A:function() { this.log("initialize A", this.tag); },
-                    testMethod0:function(arg) { this.log("cm.A testMethod0", arg); },
-                    testMethod1:function(arg) { this.log("cm.A testMethod1", arg); },
-                    destroy:function() { this.log("destroy A", this.tag); }
+                    A:function() { this.log("cm.Aのコンストラクタが呼び出された"); },
+                    testMethod0:function(arg) { this.log("cm.AのtestMethod0が呼び出された"); },
+                    testMethod1:function(arg) { this.log("cm.AのtestMethod1が呼び出された"); },
+                    destroy:function() { this.log("cm.Aのデストラクタが呼び出された"); }
                 }
             });
-            cm.log.d("TEST[extends Class]");
-            cm.Class.create({
+
+
+            cm.Class.create(
+            {
                 $name:"cm.B",
                 $extends:"cm.A",
                 $define:{
-                    B:function() { this.log("initialize B", this.tag); },
+                    B:function() { this.log("cm.Bのコンストラクタが呼び出された"); },
                     testMethod0:function(arg) {
-                        this.log("cm.B testMethod0", arg);
+                        this.log("cm.BのtestMethod0が呼び出された");
+
+                        this.log("スーパークラスのtestMethod0を呼び出す");
                         this.$super("testMethod0")(arg);
                     },
                     testMethod1:function(arg) {
-                        this.log("cm.B testMethod1", arg);
+                        this.log("cm.BのtestMethod1が呼び出された");
+
+                        this.log("スーパークラスのtestMethod1を呼び出す");
                         this.$super("testMethod1")(arg);
                     },
-                    destroy:function() { this.log("destroy B", this.tag); }
+                    destroy:function() { this.log("cm.Bのデストラクタが呼び出された"); }
                 }
             });
-            cm.Class.create({
+
+
+            cm.Class.create(
+            {
                 $name:"cm.C",
                 $extends:"cm.B",
                 $define:{
-                    C:function() { this.log("initialize C", this.tag); },
+                    C:function() { this.log("cm.Cのコンストラクタが呼び出された"); },
                     testMethod0:function(arg) {
-                        this.log("cm.C testMethod0", arg);
+                        this.log("cm.CのtestMethod0が呼び出された");
+
+                        this.log("スーパークラスのtestMethod1を呼び出す");
                         this.$super("testMethod1")(arg);
+
+                        this.log("スーパークラスのtestMethod0を呼び出す");
                         this.$super("testMethod0")(arg);
                     },
-                    destroy:function() { this.log("destroy C", this.tag); }
+                    destroy:function() { this.log("cm.Cのデストラクタが呼び出された"); }
                 }
             });
-            cm.Class.create({
+
+
+            cm.Class.create(
+            {
                 $name:"cm.D",
                 $extends:"cm.C",
                 $define:{
                     D:function()
                     {
-                        this.log("initialize D", this.tag);
+                        this.log("cm.Dのコンストラクタが呼び出された");
+
+                        this.log("cm.Dのプロパティーとしてcm.Cのインスタンスを生成");
                         this.propA = new cm.C();
+                        this.log("cm.Dのプロパティーとしてcm.Bのインスタンスを生成");
                         this.propB = {
                             propBHash0: new cm.B(),
                             propBHash1: "pj"
                         }
+                        this.log("cm.Dのプロパティーとしてcm.Bとcm.Aのインスタンスを生成");
                         this.propC = [
                             new cm.B(),
                             new cm.A(),
@@ -104,19 +147,22 @@
                         ];
                     },
                     testMethod:function(arg) {
-                        this.log("cm.D method", arg);
+                        this.log("cm.DのtestMethodが呼び出された");
+
+                        this.log("スーパークラスのtestMethod0を呼び出す");
                         this.$super("testMethod0")(arg);
                     },
-                    destroy:function() { this.log("destroy D", this.tag); }
+                    destroy:function() { this.log("cm.Dのデストラクタが呼び出された"); }
                 }
             });
             
+            cm.log.d("cm.Dのインスタンスを生成");
             var d = new cm.D();
             d.tag = "Tag TEST.";
-            cm.log.d("TEST[$super method]");
+            cm.log.d("cm.D::testMethodを呼び出す");
             d.testMethod("testMethod arg");
-            cm.log.d("TEST[$super method (retry)]");
-            d.testMethod("testMethod arg");
+
+            //cm.Dインスタンスの破棄
             d.destroy();
         });
     </script>
