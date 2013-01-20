@@ -1,9 +1,7 @@
 cm.Class.create(
     "cm.event.Event",
     "cm.loaderImpl.HtmlDomLoaderImpl",
-    "cm.loaderImpl.HtmlDomOption",
     "cm.loaderImpl.AjaxLoaderImpl",
-    "cm.loaderImpl.AjaxOption",
     "cm.core.BrowserInterface",
 {
     /** @name cm.core */
@@ -39,7 +37,7 @@ cm.Class.create(
             this.mRequestGroups.push(requestGroup);
             this._resumeRequestGroup(requestGroup) ?
                 this.mRequestGroups.pop():
-                requestGroup.notifyLoading();
+                requestGroup.beginLoad();
         },
         _resumeRequestGroup:function(requestGroup)
         {
