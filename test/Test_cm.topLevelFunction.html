@@ -1,16 +1,15 @@
 <html>
 <head>
     <title>Test_cm.topLevelFunction.html</title>
+    <script type="text/javascript" src="../manifest.js"></script>
     <script type="text/javascript" src="../coremind.js"></script>
 </head>
 <body>
     <script type="text/javascript">
+    cm.Class.load(
     function main()
     {
-        cm.log.d("TEST[log]");
-        cm.log.d("log.d", " ", "test");
-        cm.log.w("log.w", " ", "test");
-        cm.log.$("log._", " ", "test");
+        console.log("log.dumpを使用したオブジェクトのダンプチェック");
         cm.log.dump({
             A:{
                 AChildN:0,
@@ -21,48 +20,24 @@
                 },
                 AChildF:function(){}
             }
-        }, "prefixTest");
+        }, "prefixTest", 3);
         
-        var sampleData = [true, false, 91574.546, "925", [], {}, function(){}, null, undefined];
-        cm.log.d("TEST[equal.typeOf]");
+        var sampleData = [true, false, 91574.546, "925", ["array"], {obj:"obj"}, function(){}, null, undefined];
+
+        console.log("プリミティブ型判定チェック(cm.equal.typeOf)");
         for (var p in sampleData)
-            cm.log.d("[", p, "]", cm.equal.typeOf(sampleData[p]));
-            
-        cm.log.d("TEST[equal.isBoolean]");
-        for (var p in sampleData)
-            cm.log.d("[", p, "]", cm.equal.isBoolean(sampleData[p]));
-        
-        cm.log.d("TEST[equal.isNumber]");
-        for (var p in sampleData)
-            cm.log.d("[", p, "]", cm.equal.isNumber(sampleData[p]));
-        
-        cm.log.d("TEST[equal.isString]");
-        for (var p in sampleData)
-            cm.log.d("[", p, "]", cm.equal.isString(sampleData[p]));
-        
-        cm.log.d("TEST[equal.isArray]");
-        for (var p in sampleData)
-            cm.log.d("[", p, "]", cm.equal.isArray(sampleData[p]));
-        
-        cm.log.d("TEST[equal.isObject]");
-        for (var p in sampleData)
-            cm.log.d("[", p, "]", cm.equal.isObject(sampleData[p]));
-        
-        cm.log.d("TEST[equal.isFunction]");
-        for (var p in sampleData)
-            cm.log.d("[", p, "]", cm.equal.isFunction(sampleData[p]));
-        
-        cm.log.d("TEST[equal.isNull]");
-        for (var p in sampleData)
-            cm.log.d("[", p, "]", cm.equal.isNull(sampleData[p]));
-        
-        cm.log.d("TEST[equal.isUndefined]");
-        for (var p in sampleData)
-            cm.log.d("[", p, "]", cm.equal.isUndefined(sampleData[p]));
-            
-        cm.log.d("TEST[throw error]");
-        cm.log.e("log.e", " ", "test error");
-    }
+            cm.log.d(sampleData[p], "=", cm.equal.typeOf(sampleData[p]));
+
+        console.log("デバッグ関数チェック(cm.assert)");
+        cm.assert("trueを返す関数に期待値true", function(){ return true; }, true);
+        cm.assert("falseを返す関数に期待値true", function(){ return false; }, true);
+
+        console.log("コンソール出力関数チェック(cm.log)");
+        cm.log.d("log.dを使用したコンソール出力", "カンマで可変引数対応");
+        cm.log.$("log.$を使用したコンソール出力", "カンマで可変引数対応");
+        cm.log.w("log.wを使用したコンソール出力", "カンマで可変引数対応");
+        cm.log.e("log.eを使用したコンソール出力", "カンマで可変引数対応");
+    });
     </script>
 </body>
 </html>
