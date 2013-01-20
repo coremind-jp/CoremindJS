@@ -1,4 +1,5 @@
-cm.Class.create({
+cm.Class.create(
+{
     $name:"cm.motion.easingOption.BounceOption",
     $define:
     {
