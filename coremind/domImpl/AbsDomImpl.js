@@ -18,7 +18,7 @@ cm.Class.create(
         },
         destroy:function() {},
         
-        /* Eevmt */
+        /* Eevnt */
         _overrideEventDefine:function()
         {
             var e = cm.event.Event;
