@@ -137,6 +137,13 @@
                 logD(prefix, p, " ", val[p]);
         }
     }
+    function assert(text, fn, expected)
+    {
+        var _result = fn();
+        _result == expected ?
+            log(text, ":", _result, "===", expected):
+            logW(text, ":", _result, "!==", expected);
+    }
     /**
      * パッケージオブジェクトを取得します.
      * オブジェクトが存在しない場合パッケージを生成します.
@@ -192,10 +199,15 @@
         },
         get:function(className)
         {
-            var _classPath = className.split(".");
-            var _className = _classPath.pop();
-            var _pkg = getPackage(_classPath.join("."));
-            return _pkg[_className];
+            if (isUndefined(this.mRegistedClass[className]))
+            {
+                var _classPath = className.split(".");
+                var _className = _classPath.pop();
+                var _pkg = getPackage(_classPath.join("."));
+                return _pkg[_className];
+            }
+            else
+                return this.mRegistedClass[className];
         },
         importJsFile:function (className)
         {
@@ -412,9 +424,13 @@
             
             _classObject.superClass = this._getSuperClass(classDefine.$extends);
             _classObject.toString = function() { return _classFullName; }
-            _classObject.equal = function(val) {
-                return isFunction(val.getClassFullName)
-                    && _classFullName === val.getClassFullName();
+            _classObject.equal = function(instance)
+            {
+                while (!isUndefined(instance)
+                && isFunction(instance.getClassFullName))
+                    if (_classFullName === instance.getClassFullName()) return true;
+                    else instance = instance.$class.superClass.prototype;
+                return false;
             };
             _classObject.prototype.$class = _classObject;
             return _classObject;
@@ -558,8 +574,8 @@
             concat:concat,
             capitalize:capitalize
         },
-        cls:Class.mRegistedClass,
-        dataType:dType
+        dataType:dType,
+        assert:assert
     };
     
     //IE hasn't Array.indexOf method
