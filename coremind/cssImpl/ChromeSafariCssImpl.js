@@ -31,5 +31,4 @@ cm.Class.create(
             return _result;
         }
     }
-
 });
