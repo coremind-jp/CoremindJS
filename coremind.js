@@ -111,7 +111,7 @@
         {
             _result += " ";
             _result += arguments[i];
-        };
+        }
         return _result;
     }
     function dump(val, prefix, max, now)
@@ -177,7 +177,7 @@
        a.href = "data:text/plain," + encodeURIComponent(context);
         a.download = filename;
         a.dispatchEvent(e);
-    };
+    }
 
     var Class =
     {
@@ -218,7 +218,7 @@
                 var _className = _classPath.pop();
                 var _pkg = getPackage(_classPath.join("."));
                 var _domain = _classPath.shift();
-                var _jsPath = [manifest.domain[_domain], _classPath.join("/"), "/", _className, ".js"].join(""); 
+                var _jsPath = [manifest.domain[_domain], _classPath.join("/"), "/", _className, ".js"].join("");
                 log$("impoet js File:", _jsPath);
                 document.write(concat('<script type="text/javascript" src="' ,_jsPath, '"></script>'));
                 this.mImportFiles.push(_jsPath);
@@ -281,7 +281,7 @@
                     manifest.snippetGenerator.name, true);
                 xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
                 xhr.send("newFile=" + escape(source) + "&oldFile=" + oldFile);
-            }
+            };
             var xhrOldFileOnLoad = function()
             {
                 oldFile = this.responseText;
@@ -361,7 +361,7 @@
             
             if (!manifest.isJoinedSource)
                 for(var i = 0, len = _len - 1; i < len; i ++)
-                    if (isString(arguments[i])) this.importJsFile(arguments[i])
+                    if (isString(arguments[i])) this.importJsFile(arguments[i]);
             
             global.addEventListener ?
                 global.addEventListener("load", onLoad, false)://other
@@ -379,13 +379,14 @@
         },
         _registerAllDefines:function()
         {
-            for (var p in this.mClassDefines)
+            var p;
+            for (p in this.mClassDefines)
             {
                 var _classDefine = this.mClassDefines[p];
                 if (this._isAllowRegisterClass(_classDefine))
                     this._register(_classDefine, this._create(_classDefine));
             }
-            for (var p in this.mClassDefines)
+            for (p in this.mClassDefines)
                 return this._registerAllDefines();
         },
         _isAllowRegisterClass:function(classDefine)
@@ -423,7 +424,7 @@
             var _classObject = function() { this[_className].apply(this, arguments); };
             
             _classObject.superClass = this._getSuperClass(classDefine.$extends);
-            _classObject.toString = function() { return _classFullName; }
+            _classObject.toString = function() { return _classFullName; };
             _classObject.equal = function(instance)
             {
                 while (!isUndefined(instance)
@@ -440,14 +441,14 @@
             var _superClass = classObjct.superClass;
             var _classObjctPrototype = classObjct.prototype;
             var _superClassPrototype = _superClass.prototype;
-            
+            var p;
             //prototype member
-            for(var p in _superClassPrototype)
+            for(p in _superClassPrototype)
                 if (p != "$class")
                     _classObjctPrototype[p] = _superClassPrototype[p];
                 
             //static member
-            for(var p in _superClass)
+            for(p in _superClass)
                 if (p != "superClass" && p != "toString" && p != "equal")
                     classObjct[p] = _superClass[p];
         },
@@ -457,7 +458,7 @@
         _copySubClassPrototype:function(classDefine, classObjct)
         {
             var _classObjctPrototype = classObjct.prototype;
-            var _subClassDefine = classDefine.$define
+            var _subClassDefine = classDefine.$define;
             var _classPath = classDefine.$name.split(".");
             var _superClassPath = classDefine.$extends.split(".");
             
@@ -494,7 +495,7 @@
                 {
                     _superClassConstructor.apply(this, arguments);
                     _subClassConstructor.apply(this, arguments);
-                }
+                };
             }
         },
         _tryOverrideDestroy:function(classObjct)
@@ -510,7 +511,7 @@
                 {
                     _subClassDestroy.apply(this, arguments);
                     _superClassDestroy.apply(this, arguments);
-                }
+                };
             }
         },
         _register:function(classDefine, classObject)
@@ -540,8 +541,7 @@
     if (!manifest.enabledLog)
         log = logD = logW = logE = log$ = dump = function(){};
     
-    global.cm = 
-    {
+    global.cm = {
         manifest:manifest,
         Class:Class,
         equal:{

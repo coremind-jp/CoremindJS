@@ -87,7 +87,7 @@ cm.Class.create(
         },
         removeRequestGroup:function(requestGroup)
         {
-            var i = this.mRequestGroups.indexOf(requestGroup)
+            var i = this.mRequestGroups.indexOf(requestGroup);
             if (i > -1) this.mRequestGroups.splice(i, 1);
         },
         clearRequestGroups:function()
