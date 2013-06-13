@@ -56,7 +56,6 @@ CoremindJSは3つのブランチによってコードを管理しています。
 
 **Hirotaka Nakahara**[@COREMIND](http://coremind.jp/blog/)
 
-+ http://twitter.com/h_nkhr
 + http://github.com/otn83
 
 ## Copyright and license
