@@ -1,4 +1,4 @@
-cm.Class.create(
+cls.exports(
     "cm.motion.easingOption.BackOption",
     "cm.motion.easingOption.BounceOption",
     "cm.motion.easingOption.ElasticOption",
@@ -8,10 +8,11 @@ cm.Class.create(
     $define:{
         Easing:function()
         {
-            this.math = Math;
-            this.mDefaultBackOption = new cm.motion.easingOption.BackOption;
-            this.mDefaultBounceOption = new cm.motion.easingOption.BounceOption;
-            this.mDefaultElasticOption = new cm.motion.easingOption.ElasticOption;
+            this.DEFAULT_OPTION = {
+                BACK:new cm.motion.easingOption.BackOption(),
+                BOUNCE:new cm.motion.easingOption.BounceOption(),
+                ELASTIC:new cm.motion.easingOption.ElasticOption()
+            };
         },
         destroy:function(){},
         
@@ -20,10 +21,10 @@ cm.Class.create(
         },
         /** Sine */
         SineIn: function (p) {
-            return 1-this.math.cos(this.math.PI / 2 * p);
+            return 1-Math.cos(Math.PI / 2 * p);
         },
         SineOut: function (p) {
-            return this.math.sin(this.math.PI / 2 * p);
+            return Math.sin(Math.PI / 2 * p);
         },
         SineInOut:function (p) {
             return p < .5 ?
@@ -93,14 +94,14 @@ cm.Class.create(
         /** Back */
         BackIn:function(p, option)
         {
-            if (cm.equal.isUndefined(option)) option = this.mDefaultBackOption;
+            if (eq.isUndefined(option)) option = cm.motion.Easing.DEFAULT_OPTION.BACK;
             var _baseEase = option.baseEase();
             var _skew = option.skew();
             return ((_skew + 1) * p - _skew) * _baseEase(p);
         },
         BackOut:function(p, option)
         {
-            if (cm.equal.isUndefined(option)) option = this.mDefaultBackOption;
+            if (eq.isUndefined(option)) option = cm.motion.Easing.DEFAULT_OPTION.BACK;
             var _baseEase = option.baseEase();
             var _skew = option.skew();
             return -(((_skew + 1) * (p = 1-p) - _skew) * _baseEase(p)) + 1;
@@ -113,19 +114,19 @@ cm.Class.create(
         /** Elastic */
         ElasticIn:function(p, option)
         {
-            if (cm.equal.isUndefined(option)) option = this.mDefaultElasticOption;
+            if (eq.isUndefined(option)) option = cm.motion.Easing.DEFAULT_OPTION.ELASTIC;
             var _baseEase = option.baseEase();
             var _amplitude = option.amplitude();
-            var _pi = this.math.PI;
-            return _baseEase(p) * -this.math.cos(_pi + (_pi * 2) * _amplitude * p);
+            var _pi = Math.PI;
+            return _baseEase(p) * -Math.cos(_pi + (_pi * 2) * _amplitude * p);
         },
         ElasticOut:function(p, option)
         {
-            if (cm.equal.isUndefined(option)) option = this.mDefaultElasticOption;
+            if (eq.isUndefined(option)) option = cm.motion.Easing.DEFAULT_OPTION.ELASTIC;
             var _baseEase = option.baseEase();
             var _amplitude = option.amplitude();
-            var _pi = this.math.PI;
-            return _baseEase(1-p) * this.math.cos(_pi + (_pi * 2) * _amplitude * p) + 1;
+            var _pi = Math.PI;
+            return _baseEase(1-p) * Math.cos(_pi + (_pi * 2) * _amplitude * p) + 1;
         },
         ElasticInOut:function(p, option) {
             return p < .5 ?
@@ -135,9 +136,9 @@ cm.Class.create(
         /** Bounce */
         BounceIn:function(p, option)
         {
-            if (cm.equal.isUndefined(option))
-                option = this.mDefaultBounceOption;
-            
+            if (eq.isUndefined(option))
+                option = cm.motion.Easing.DEFAULT_OPTION.BOUNCE;
+
             var _bounceTable = [1];
             var _num = option.bounceNum();
             var _refrection = option.reflection();
@@ -169,12 +170,12 @@ cm.Class.create(
             j = _num - (_currentBounceNum);
             for (i = 0; i < j; i++) reflection *= _refrection;
                 
-            return this.math.sin(this.math.PI * (_segmentPer - _offsetBounceSegment) / _bounceTable[_currentBounceNum]) * reflection;
+            return Math.sin(Math.PI * (_segmentPer - _offsetBounceSegment) / _bounceTable[_currentBounceNum]) * reflection;
         },
         BounceOut:function(p, option)
         {
-            if (cm.equal.isUndefined(option))
-                option = this.mDefaultBounceOption;
+            if (eq.isUndefined(option))
+                option = cm.motion.Easing.DEFAULT_OPTION.BOUNCE;
             
             var _bounceTable = [1];
             var _num = option.bounceNum();
@@ -207,7 +208,7 @@ cm.Class.create(
             j = _num - (_currentBounceNum);
             for (i = 0; i < j; i++) reflection *= _refrection;
                 
-            return 1-this.math.sin(this.math.PI * (_segmentPer - _offsetBounceSegment) / _bounceTable[_currentBounceNum]) * reflection;
+            return 1-Math.sin(Math.PI * (_segmentPer - _offsetBounceSegment) / _bounceTable[_currentBounceNum]) * reflection;
         },
         BounceInOut:function(p, option) { 
             return p < .5 ?

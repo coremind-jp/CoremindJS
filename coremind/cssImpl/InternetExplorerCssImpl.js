@@ -1,4 +1,4 @@
-cm.Class.create(
+cls.exports(
 {
     /** @name cm.cssImpl */
     $name:"cm.cssImpl.InternetExplorerCssImpl",
@@ -11,8 +11,22 @@ cm.Class.create(
             this.mCss = document.createStyleSheet();
             this.mCss.cssText = "css";
         },
-        destroy:function() {},
-        
+        destroy:function() {}
+    },
+    $override:
+    {
+        _createStyleAccessor:function()
+        {
+            this.mPrefix = "-ms-";
+            this.accessor = {
+                textShadow     :"mstextShadow",
+                boxShadow      :"boxShadow",
+                transform      :"msTransform",
+                transformOrigin:"msTransformOrigin",
+                perspective    :"msPerspective"
+            };
+        },
+
         computedStyle:function(element) {
             return element.currentStyle;
         },
@@ -23,6 +37,7 @@ cm.Class.create(
             return this.mCss.rules[index];
         },
         appendRule:function(selector, value, index) {
+            this.log(selector, value, index);
             this.mCss.addRule(selector, value, index);
         },
         removeRule:function(index) {
@@ -31,9 +46,6 @@ cm.Class.create(
         modifyRule:function(index, value) {
             this.log(index, this.mCss.rules[index].style.cssText);
             this.mCss.rules[index].style.cssText = value;
-        },
-        getGradientCssText:function() {
-            return "";
         }
     }
 });

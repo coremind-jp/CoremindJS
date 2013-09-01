@@ -1,0 +1,35 @@
+<html>
+<head>
+    <script type="text/javascript" src="../jscls.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+    var _class = "cm.util.Color";
+    document.title = _class;
+    cm.Class.using(_class);
+    function main()
+    {
+        var obj = new cm.util.Color(0xFF800FF0);
+        out.d(obj);
+        
+        out.d("argb", obj.argb().toString(16));
+        out.d("rgb", obj.rgb().toString(16));
+        out.d("Alpha Hex:", obj.aHex().toString(16), " ratio:", obj.aRatio());
+        out.d("Red Hex:", obj.rHex().toString(16), " ratio:", obj.rRatio());
+        out.d("Green Hex:", obj.gHex().toString(16), " ratio:", obj.gRatio());
+        out.d("Blue Hex:", obj.bHex().toString(16), " ratio:", obj.bRatio());
+        
+        out.d("override color value");
+        obj.setAsHex(0x0);
+        out.d("argb", obj.argb());
+        out.d("rgb", obj.rgb());
+        out.d("Alpha Hex:", obj.aHex(), " ratio:", obj.aRatio());
+        out.d("Red Hex:", obj.rHex(), " ratio:", obj.rRatio());
+        out.d("Green Hex:", obj.gHex(), " ratio:", obj.gRatio());
+        out.d("Blue Hex:", obj.bHex(), " ratio:", obj.bRatio());
+        
+        obj.destroy();
+    }
+    </script>
+</body>
+</html>

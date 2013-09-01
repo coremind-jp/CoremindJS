@@ -1,5 +1,5 @@
-cm.Class.create(
-    "cm.core.BrowserInterface",
+cls.exports(
+    "cm.core.UserAgent",
 {
     /** @name cm.loader */
     $name:"cm.loaderImpl.AjaxLoaderImpl",
@@ -7,91 +7,118 @@ cm.Class.create(
     $define:
     /** @lends cm.loader.ElementLoader.prototype */
     {
-        AjaxLoaderImpl:function() {},
+        AjaxLoaderImpl:function()
+        {
+
+        },
         destroy:function() {},
         
-        create:function(url, param, option)
+        _setRequestHeader:function()
         {
-            var _xhr = cm.dom.createXhr();
-            
-            this.initializeLoader(_xhr);
-            this.attachCustomProperty(_xhr, url, param, option);
-            return _xhr;
+            if ("setRequestHeader" in this.mLoader)
+                for (var name in this.mOption.header)
+                    this.mLoader.setRequestHeader(name, this.mOption.header[name]);
+            else
+                out.w("XDR is No custom headers may be added to the request");
         },
-        request:function(loaderObject)
+        _onStatechange:function()
         {
-            var _arg = loaderObject.cmArgumentsCache;
-            var _url = _arg[0];
-            var _param = _arg[1];
-            var _option = _arg[2];
-            var _method = _option.method.toUpperCase();
+            if (this.mLoader.readyState == 4)
+                this.mLoader.status == 200 ?
+                    this.onComplete():
+                    this.onError(this.mLoader.status);
+        },
+        _createXhr:function()
+        {
+            if (cm.core.UserAgent.isInternetExplorer())
+            {
+                //ajax supprt are version 8+ only.
+                if (cm.core.UserAgent.browserVersion <= 7)
+                    if (eq.isFunction(cm.onWarningUpgrade))
+                        cm.onWarningUpgrade();
+                    
+                //version 8+ are use XDomainRequest object.
+                if (cm.core.UserAgent.browserVersion > 7)
+                {
+                    out.d("create XDomainRequest");
+                    return new XDomainRequest();
+                }
+            }
+            else
+                return new XMLHttpRequest();
+        }
+    },
+    $override:
+    {
+        setting:function(requestParams, requestOption)
+        {
+            this.$super("setting")(
+                requestParams,
+                eq.isUndefined(requestOption) ?
+                    cls.config.loaderOptionTemplate.ajax:
+                    requestOption);
+        },
+        _setLoader:function()
+        {
+            this.mLoader = this._createXhr();
+            this.mLoader.onload = this.$bind("onComplete");
+            this.mLoader.onreadystatechange = this.$bind("_onStatechange");
+            this.mLoader.onprogress = this.$bind("onProgress");
+        },
+        _resetLoader:function()
+        {
+            var _loader = this.mLoader;
+            this.mLoader = null;
+
+            _loader.abort();
+            _loader.onload = _loader.onprogress = _loader.onreadystatechange = null;
+
+            return _loader;
+        },
+
+        request:function()
+        {
+            this.$super("request")();
+
+            var _url    = this.mParams.url();
+            var _method = this.mOption.method.toUpperCase();
             
-            this.$super("request")(loaderObject);
-            loaderObject.requestType = _option.requestType;
-            loaderObject.withCredentials = _option.withCredentials;
-            
+            this.mLoader.requestType = this.mOption.requestType;
+            this.mLoader.withCredentials = this.mOption.withCredentials;
+            var _q = this.mParams.createGetQuery();
+
             if (_method.match(/^POST$/))
             {
-                loaderObject.open(_method, url, _option.async);
-                this._setRequestHeader(loaderObject, _option.header);
-                loaderObject.send(_param);
+                this.mLoader.open(_method, _url, this.mOption.async);
+                this._setRequestHeader();
+                this.mLoader.send(_q);
             }
             else
             {
-                _param = (_param == "" ? "": "?") + _param;
-                try { loaderObject.open(_method, _url + _param, _option.async); }
+                _q = _q.length > 0 ? "?" + _q: _q;
+                var _param = this.mParams.createGetQuery();
+                try { this.mLoader.open(_method, _url + _q, this.mOption.async); }
                 catch (e) { this.log(e.message); return; } //ie error by local environment.
-                this._setRequestHeader(loaderObject, _option.header);
-                loaderObject.send(null);
+                this._setRequestHeader(this.mLoader, this.mOption.header);
+                this.mLoader.send(null);
             }
         },
-        _setRequestHeader:function(loaderObject, header)
+
+        onProgress:function()
         {
-            if ("setRequestHeader" in loaderObject)
-                for (var name in header)
-                    loaderObject.setRequestHeader(name, header[name]);
-            else
-                cm.log.w("XDR is No custom headers may be added to the request");
-        },
-        initializeLoader:function(loaderObject)
-        {
-            var _onload = this.$bind("onComplete");
-            var _onStatechange = this.$bind("_onStatechange");
-            var _onProgress = this.$bind("onProgress");
-            loaderObject.onload = function(){ _onload({ target:this }); };
-            loaderObject.onreadystatechange = function(){ _onStatechange(this); };
-            loaderObject.onprogress = function(){ _onProgress(this); };
-        },
-        resetLoader:function(loaderObject)
-        {
-            this.$super("resetLoader")(loaderObject);
-            loaderObject.onload = null;
-            loaderObject.onprogress = null;
-            loaderObject.onreadystatechange = null;
-            this.detachCustomProperty(loaderObject);
-        },
-        _onStatechange:function(loaderObject)
-        {
-            if (loaderObject.readyState == 4)
-                loaderObject.status == 200 ?
-                    this.onComplete({ target:loaderObject }):
-                    this.onError({ target:loaderObject });
-        },
-        onProgress:function(e)
-        {
-            if (!cm.equal.isUndefined(e.lengthComputable) //XDR has not progress event.
+            if (!eq.isUndefined(this.mLoader.lengthComputable) //XDR has not progress event.
             &&   e.lengthComputable)
             {
                 var _xhr = e.target;
-                this.$super("onProgress")(_xhr.cmArgumentsCache[0], e.loaded / e.total);
+                this.$super("onProgress")(_xhr.requestParams.id(), e.loaded / e.total);
             }
         },
-        onTimeout:function(loaderObject)
+        onComplete:function()
         {
-            loaderObject.abort();
-            this.$super("onTimeout")(loaderObject);
-        },
-        onError:function(e) { this.$super("onError")(e.target); },
-        onComplete:function(e) { this.$super("onComplete")(e.target); }
+            this.$super("onComplete")(
+                eq.isNull(this.mLoader.responseXML) ?
+                    this.mLoader.response:
+                    this.mLoader.responseXML);
+        }
     }
 });

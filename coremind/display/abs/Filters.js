@@ -1,8 +1,7 @@
-cm.Class.create(
+cls.exports(
 {
     /** @name cm.display.abs */
     $name:"cm.display.abs.Filters",
-    $extends:"cm.display.abs.DisplayParameters",
     $define:
     /** @lends cm.display.abs.Filters.prototype */
     {
@@ -13,30 +12,30 @@ cm.Class.create(
          */
         Filters:function() {},
         destroy:function() {
-            if (!cm.equal.isUndefined(this.mFilters))
+            if (!eq.isUndefined(this.mFilters))
                 this.mFilters.length = 0;
-            if (!cm.equal.isUndefined(this.mRemoved))
+            if (!eq.isUndefined(this.mRemoved))
                 this.mRemoved.length = 0;
         },
         
-        get:function(index)
+        editFilter:function(index)
         {
-            if (cm.equal.isUndefined(this.mFilters)) this.mFilters = [];
+            if (eq.isUndefined(this.mFilters)) this.mFilters = [];
             return this.mFilters[index];
         },
         indexOf:function(filter)
         {
-            if (cm.equal.isUndefined(this.mFilters)) this.mFilters = [];
+            if (eq.isUndefined(this.mFilters)) this.mFilters = [];
             return this.mFilters.indexOf(filter);
         },
         
         add:function(filter)
         {
-            if (cm.equal.isUndefined(this.mFilters))
+            if (eq.isUndefined(this.mFilters))
                 this.mFilters = [];
             
             var _order = 0;
-            var _filterClass = cm.Class.get(filter.getClassFullName());
+            var _filterClass = cls.get(filter.getClassFullName());
             for(var i = 0, len = this.mFilters.length; i < len; i++)
                 if (_filterClass.equal(this.mFilters[i]))
                     _order++;
@@ -50,12 +49,12 @@ cm.Class.create(
             var i = this.indexOf(filter);
             if (i < -1) return;
             
-            if (cm.equal.isUndefined(this.mRemoved))
+            if (eq.isUndefined(this.mRemoved))
                 this.mRemoved = [];
             this.mRemoved.push(this.mFilters[i]);
-            this.mFilters.splice(i, 1)
+            this.mFilters.splice(i, 1);
             
-            var _filterClass = cm.Class.get(filter.getClassFullName());
+            var _filterClass = cls.get(filter.getClassFullName());
             for(i = 0, len = this.mFilters.length; i < len; i++)
                 if (_filterClass.equal(this.mFilters[i])
                 && this.mFilters[i].order > filter.order)
@@ -70,8 +69,16 @@ cm.Class.create(
         },
         _removedFilters:function() {
             return this.mRemoved;
-        }
+        },
         
+        /**
+         * 文字列表現を取得します.
+         */
+        dumpProp:function()
+        {
+            for(i = 0, len = this.mFilters.length; i < len; i++)
+                this.mFilters[i].dumpProp();
+        }        
 
     }
 });

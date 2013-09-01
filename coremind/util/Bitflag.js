@@ -1,4 +1,4 @@
-cm.Class.create(
+cls.exports(
 {
     /** @name cm.display */
     $name:"cm.util.Bitflag",
@@ -35,8 +35,8 @@ cm.Class.create(
         /**
          * 文字列表現を取得します.
          */
-        toString:function() {
-            return cm.string.concat("flag:", this.mFlags.toString(2));
+        dumpFlag:function() {
+            this.log(ex.string.concat("\nflag:", this.mFlags.toString(2)));
         }
     }
 });

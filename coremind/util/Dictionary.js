@@ -1,4 +1,4 @@
-cm.Class.create(
+cls.exports(
 {
     /** @name cm.data */
     $name:"cm.util.Dictionary",
@@ -62,7 +62,7 @@ cm.Class.create(
         {
             var _impl = Array.prototype.shift.call(arguments);
             for (var i=0, _len = this.m_key.length; i < _len; i++)
-                if (!cm.equal.isUndefined(this.m_key[i]))
+                if (!eq.isUndefined(this.m_key[i]))
                     _impl(this.m_key[i], this.m_value[i], arguments);
         },
         /**

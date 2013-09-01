@@ -1,4 +1,4 @@
-cm.Class.create(
+cls.exports(
     "cm.event.Event",
     "cm.util.UpdateDispatcher",
 {
@@ -16,15 +16,17 @@ cm.Class.create(
          */
         Updater:function()
         {
-            this.mStretch = 1;
             this.mReverse = false;
+            this.mStretch = 1;
+            this.mTransition = null;
+            this.mProgress = 0;
         },
         destroy:function() {
             this.stop();
         },
         getCount:function() { return this.mCount; },
         getDelta:function() { return this.mDelta; },
-        getRatio:function() { return this.mRatio; },
+        getProgress:function() { return this.mProgress; },
         getWaitTime:function() { return this.mWait; },
         /**
          * 計測を開始します.
@@ -34,16 +36,27 @@ cm.Class.create(
          */
         start:function(delay, repeat, delta)
         {
-            this.mDelay = delay;
-            this.mRepeate = isNaN(repeat) || repeat < 0 ? 0: repeat;
-            this.mDelta = isNaN(delta) || delta < 0 ? 0: delta;
-            this._resetDetail();
-            cm.util.UpdateDispatcher.addUpdater(this);
-        },
-        _resetDetail:function()
-        {
-            this.mWaitOffset = this.mCount = this.mRatio = this.mWait = 0;
+            this.mWait = 0;
             this.mPause = false;
+            this.mDelay = delay;
+            this.mRepeat = isNaN(repeat) || repeat < 0 ? 0: repeat;
+            this.mIsContinue = true;
+
+            if (this.mReverse)
+            {
+                this.mProgress = 1;
+                this.mCount = this.mRepeat;
+                this.mDelta = isNaN(delta) || delta < 0 ?
+                    this.mDelay * (this.mRepeat == 0 ? 1: this.mRepeat):
+                    delta;
+            }
+            else
+            {
+                this.mProgress = 0;
+                this.mCount = 0;
+                this.mDelta = isNaN(delta) || delta < 0 ? 0: delta;
+            }
+            cm.util.UpdateDispatcher.addUpdater(this);
         },
         /**
          * 計測を停止し初期化します.
@@ -52,17 +65,15 @@ cm.Class.create(
         stop:function()
         {
             cm.util.UpdateDispatcher.removeUpdater(this);
-            this._resetDetail();
+            this.mWait = 0;
+            this.mPause = false;
         },
         /**
          * 計測を一定時間停止します.
          * 直ちにwaitを解除したい場合このメソッドに0を指定します.
          * @param {Number} delay 計測停止時間(ms).
          */
-        wait:function(delay)
-        {
-            if (this.mWait > 0) this.mWaitOffset -= this.mWait;
-            this.mWaitOffset += delay;
+        wait:function(delay) {
             this.mWait = delay;
         },
         /**
@@ -83,6 +94,15 @@ cm.Class.create(
             this.mReverse = val;
             return this;
         },
+        toggleReverse:function()
+        {
+            this.mReverse = this.mReverse ? false: true;
+            return this;
+        },
+        setTimeTransition:function(easing, easingOption) {
+            this.mTransition = easing;
+            this.mTransitionOption = easingOption;
+        },
         timeStretch:function() { return this.mStretch; },
         timeStretchAbs:function(val) { this._timeStretch(val); },
         timeStretchRel:function(val) { this._timeStretch(val + this.mStretch); },
@@ -100,50 +120,90 @@ cm.Class.create(
         {
             elapsed = this.mStretch != 1 ? this.mStretch * elapsed: elapsed;
             
-            return this._isPause() || this._isWait(elapsed) ?
+            return this.isPause() || this.isWait(elapsed) ?
                 true:
-                this._updateDetail(dateNow, this.mReverse ? -elapsed: elapsed);
+                this._updateProgress(dateNow, elapsed);
         },
-        _updateDetail:function(dateNow, elapsed)
+        _updateProgress:function(dateNow, elapsed)
         {
-            this.mDelta += elapsed;
-            var _per = this.mDelta / this.mDelay;
-            var _currentCount = parseInt(_per);
-            this.mRatio = _per - _currentCount;
-            
-            if (this.mCount != _currentCount)
+            var _isComplete, _progress, _ratio;
+            if (this.mReverse)
             {
-                this.mCount = _currentCount;
-                return this.mRepeate <= this.mCount ? this.onComplete(): this.onUpdate();
+                _isComplete = this._isCompleteByReverse;
+                this.mDelta -= elapsed;
             }
-            
-            if (this.mRatio < 0)
-                return this.onComplete();
-            
-            this.update(dateNow, elapsed);
-            return true;
+            else
+            {
+                _isComplete = this._isCompleteByDefault;
+                this.mDelta += elapsed;
+            }
+            _progress = this.mDelta / this.mDelay;
+            _ratio = this.mProgress;
+
+            this.mCount = _progress|0;
+            _progress -= this.mCount;
+
+            this.mProgress = eq.isNull(this.mTransition) ?
+                _progress:
+                this.mTransition(_progress, this.mTransitionOption);
+
+            return _isComplete.call(this, _progress, _ratio, dateNow, elapsed);
+        },
+        _isCompleteByDefault:function(progress, ratio, dateNow, elapsed)
+        {
+            if (progress < ratio)
+                return this.mRepeat == 0 || this.mCount < this.mRepeat ?
+                    this.onUpdate():
+                    this.onCompleteByPreprocess();
+            else
+            {
+                this.update(dateNow, elapsed);
+                return this.mIsContinue;
+            }
+        },
+        _isCompleteByReverse:function(progress, ratio, dateNow, elapsed)
+        {
+            if (ratio < progress || progress < 0)
+                return this.mRepeat == 0 || 0 < this.mCount ?
+                    this.onUpdate():
+                    this.onCompleteByPreprocess();
+            else
+            {
+                this.update(dateNow, elapsed);
+                return this.mIsContinue;
+            }
         },
         update:function(dateNow, elapsed) {},
         onUpdate:function() {
             this.dispatchEvent(cm.event.Event.UPDATE);
-            return true;
+            return this.mIsContinue;
+        },
+        onCompleteByPreprocess:function()
+        {
+            //onCompleteのコールバック関数実行時にUpdaterをもう一度再生を呼び出された場合、
+            //再生直後にonCompleteコールバックの戻り値に寄って停止されてしまう問題を解決する為に、
+            //UpdateDispatcherに戻す判定をmIsContinueに移譲する。
+            this.mIsContinue = false;
+            this.onComplete();
+            return this.mIsContinue;
         },
         onComplete:function() {
             this.dispatchEvent(cm.event.Event.COMPLETE);
-            return false;
+            return this.mIsContinue;
         },
         /**
          * pauseかを示す値を返します.
          * pause中だった場合、計測開始時刻をpause分ずらします.
          */
-        _isPause:function() {
+        isPause:function() {
             return this.mPause;
         },
         /**
          * waitかを示す値を返します.
          * wait中だった場合、待機時間からelapsedを差し引きます.
          */
-        _isWait:function(elapsed) {
+        isWait:function(elapsed) {
+            if (eq.isUndefined(elapsed)) elapsed = 0;
             return this.mWait > 0 && (this.mWait -= elapsed) > 0;
         }
         /**#@-*/

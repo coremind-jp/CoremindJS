@@ -1,0 +1,45 @@
+<html>
+<head>
+    <script type="text/javascript" src="../jscls.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+    var _class = "cm.util.Dictionary";
+    document.title = _class;
+    cm.Class.using(_class);
+    function main()
+    {
+        var obj = new cm.util.Dictionary();
+        
+        out.d("TEST[set primitive]");
+        obj.set("a", "a");
+        out.d(obj.get("a"));
+        
+        out.d("TEST[set reference]");
+        var _key0 = {};
+        obj.set(_key0, "key0");
+        out.d(obj.get(_key0));
+        var _key1 = {};
+        obj.set(_key1, "key1");
+        out.d(obj.get(_key1));
+        
+        out.d("TEST[override]");
+        obj.set(_key0, 888);
+        out.d(obj.get(_key0));
+        
+        obj.set(_key1, _key0);
+        out.d(obj.get(obj.get(_key1)));
+        
+        out.d("TEST[delete]");
+        obj.del("a");
+        obj.del(_key0);
+        obj.del(_key1);
+        out.d(obj.get("a"));
+        out.d(obj.get(_key0));
+        out.d(obj.get(_key1));
+        
+        obj.destroy();
+    }
+    </script>
+</body>
+</html>

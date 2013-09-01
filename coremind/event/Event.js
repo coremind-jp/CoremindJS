@@ -1,4 +1,4 @@
-cm.Class.create(
+cls.exports(
 {
     $name:"cm.event.Event",
     $static:
@@ -17,6 +17,7 @@ cm.Class.create(
         UPDATE:"update",
         COMPLETE:"complete",
         SOUND_COMPLETE:"soundComplete",
+        SCROLL_COMPLETE:"scrollComplete",
         //FRAME, Object
         CONTEXT_MENU:"contextMenu",
         ABORT:"abort",

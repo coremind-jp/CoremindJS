@@ -1,0 +1,41 @@
+<html>
+<head>
+    <script type="text/javascript" src="../jscls.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+    var _class = "cm.display.Position";
+    document.title = _class;
+    cm.Class.using(_class);
+    function main()
+    {
+        var obj = new cm.display.Position();
+        out.d(obj);
+        
+        out.d("TEST[set Abs property]");
+        obj
+            .xAbs(10)
+            .yAbs(25)
+            .zAbs(79);
+        out.d(obj);
+        
+        out.d("TEST[dump isChanged]");
+        out.d(obj.isChanged());
+        
+        out.d("TEST[applied]");
+        obj.applied();
+        out.d(obj.isChanged());
+        out.d(obj);
+        
+        out.d("TEST[set relative property]");
+        obj
+            .xRel(40)
+            .yRel(25)
+            .zRel(-29);
+        out.d(obj.toString());
+        
+        obj.destroy();
+    }
+    </script>
+</body>
+</html>

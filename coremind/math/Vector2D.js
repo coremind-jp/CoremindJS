@@ -1,4 +1,4 @@
-cm.Class.create(
+cls.exports(
 {
     /** @name cm.display */
     $name:"cm.math.Vector2D",
@@ -10,15 +10,18 @@ cm.Class.create(
          * @name cm.math.Vector2D
          * @extends cm.BaseObject
          */
-        Vector2D:function()
+        Vector2D:function(x, y)
         {
-            this.x = 0;
-            this.y = 0;
+            this.x = x ? x: 0;
+            this.y = y ? y: 0;
         },
         destroy:function() {},
         
-        toString:function() {
-            return cm.string.concat("x:", this.x, " y:", this.y);
+        dumpProp:function()
+        {
+            this.log(ex.string.concat(
+                "\nx:", this.x,
+                "\ny:", this.y));
         }
     }
 });

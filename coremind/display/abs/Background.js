@@ -1,4 +1,5 @@
-cm.Class.create(
+
+cls.exports(
 //import
     "cm.display.abs.fill.Color",
     "cm.display.abs.fill.Gradient",
@@ -60,6 +61,19 @@ cm.Class.create(
             this.disabledFlag(4);
             this.enabledFlag(8);
             return this.mImage;
+        }
+    },
+    $override:
+    {
+        /**
+         * 文字列表現を取得します.
+         */
+        dumpProp:function()
+        {
+            this.$super("dumpProp")();
+            this.mImage.dumpProp();
+            this.mColor.dumpProp();
+            this.mGradient.dumpProp();
         }
     }
 });

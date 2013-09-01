@@ -1,4 +1,5 @@
-cm.Class.create(
+cls.exports(
+    "cm.display.abs.Align",
 {
     /** @name cm.display */
     $name:"cm.display.abs.Transform",
@@ -13,15 +14,7 @@ cm.Class.create(
             rotationX:4,
             rotationY:5,
             rotationZ:6,
-            originX  :7,
-            originY  :8
-        },
-        TWEEN_ACCESSOR:
-        {
-            x: {
-                get:"x",
-                set:"xFix"
-            }
+            perspective:7
         }
     },
     $define:
@@ -34,77 +27,14 @@ cm.Class.create(
          * @name cm.display.abs.Transform
          * @extends cm.BaseObject
          */
-        Transform:function() {
+        Transform:function()
+        {
             //don't use index 0.
-            this.mParams = [-1, 1, 1, 1, 0, 0, 0, 0, 0];
+            this.mParams = [-1, 1, 1, 1, 0, 0, 0];
+            this.mOrigin = new cm.display.abs.Align();
+            //this.mOrigin.applyCenterV().applyCenterH();
         },
         destroy:function() {},
-        
-        /**
-         * x座標を取得します.
-         */
-        x:function() {
-            return this._getWrapper("x");
-        },
-        /**
-         * x座標を絶対値で設定します.
-         * @param {Number} val 値
-         */
-        xAbs:function(val) {
-            return this._setWrapperAbs("x", val);
-        },
-        /**
-         * x座標を相対値で設定します.
-         * @param {Number} val 値
-         */
-        xRel:function(val) {
-            return this._setWrapperRel("x", val);
-        },
-        
-        
-        /**
-         * y座標を取得します.
-         */
-        y:function() {
-            return this._getWrapper("y");
-        },
-        /**
-         * y座標を絶対値で設定します.
-         * @param {Number} val 値
-         */
-        yAbs:function(val) {
-            return this._setWrapperAbs("y", val);
-        },
-        /**
-         * y座標を相対値で設定します.
-         * @param {Number} val 値
-         */
-        yRel:function(val) {
-            return this._setWrapperRel("y", val);
-        },
-        
-        
-        /**
-         * y座標を取得します.
-         */
-        z:function() {
-            return this._getWrapper("z");
-        },
-        /**
-         * y座標を絶対値で設定します.
-         * @param {Number} val 値
-         */
-        zAbs:function(val) {
-            return this._setWrapperAbs("z", val);
-        },
-        /**
-         * y座標を相対値で設定します.
-         * @param {Number} val 値
-         */
-        zRel:function(val) {
-            return this._setWrapperRel("z", val);
-        },
-        
         
         /**
          * x軸のスケールを取得します.
@@ -237,66 +167,60 @@ cm.Class.create(
             return this._setWrapperRel("rotationZ", val);
         },
         
-        
         /**
-         * x軸の基準値を取得します.
+         * z軸の回転値を取得します.
          */
-        originX:function() {
-            return this._getWrapper("originX");
+        perspective:function() {
+            return this._getWrapper("perspective");
         },
         /**
-         * x軸の基準値を絶対値で設定します.
+         * z軸の回転値を絶対値で設定します.
          * @param {Number} val 値
          */
-        originXAbs:function(val) {
-            return this._setWrapperAbs("originX", val);
+        perspectiveAbs:function(val) {
+            return this._setWrapperAbs("perspective", val);
         },
         /**
-         * x軸の基準値を相対値で設定します.
+         * z軸の回転値を相対値で設定します.
          * @param {Number} val 値
          */
-        originXRel:function(val) {
-            return this._setWrapperRel("originX", val);
+        perspectiveRel:function(val) {
+            return this._setWrapperRel("perspective", val);
         },
         
-        
         /**
-         * x軸の基準値を取得します.
+         * 基準値を取得します.
          */
-        originY:function() {
-            return this._getWrapper("originY");
+        origin:function() {
+            return this.mOrigin;
         },
         /**
-         * x軸の基準値を絶対値で設定します.
+         * 基準値オブジェクトを取得します.
          * @param {Number} val 値
          */
-        originYAbs:function(val) {
-            return this._setWrapperAbs("originY", val);
-        },
-        /**
-         * x軸の基準値を相対値で設定します.
-         * @param {Number} val 値
-         */
-        originYRel:function(val) {
-            return this._setWrapperRel("originY", val);
-        },
-        
-        
+        editOrigin:function()
+        {
+            this.enabledFlag(256);
+            return this.mOrigin;
+        }
+    },
+    $override:
+    {
         /**
          * 文字列表現を取得します.
          */
-        toString:function()
+        dumpProp:function()
         {
-            return cm.string.concat(
-                "scaleX:"   , this.scaleX(),
-                "\nscaleY:"   , this.scaleY(),
-                "\nscaleZ:"   , this.scaleZ(),
-                "\nrotationX:", this.rotationX(),
-                "\nrotationY:", this.rotationY(),
-                "\nrotationZ:", this.rotationZ(),
-                "\noriginX:"  , this.originX(),
-                "\noriginY:"  , this.originY(),
-                "\n", this.$super("toString")());
+            this.$super("dumpProp")();
+            this.log(ex.string.concat(
+                "\nscaleX:"    , this.scaleX(),
+                "\nscaleY:"    , this.scaleY(),
+                "\nscaleZ:"    , this.scaleZ(),
+                "\nrotationX:" , this.rotationX(),
+                "\nrotationY:" , this.rotationY(),
+                "\nrotationZ:" , this.rotationZ()),
+                "\nperspective:", this.perspective());
+            this.mOrigin.dumpProp();
         }
     }
 });

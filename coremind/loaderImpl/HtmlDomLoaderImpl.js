@@ -1,6 +1,5 @@
-cm.Class.create(
-    "cm.util.UpdateDispatcher",
-    "cm.core.BrowserInterface",
+cls.exports(
+    "cm.core.DomInterface",
 {
     /** @name cm.loader */
     $name:"cm.loaderImpl.HtmlDomLoaderImpl",
@@ -8,58 +7,47 @@ cm.Class.create(
     $define:
     /** @lends cm.loader.HtmlDomLoaderImpl.prototype */
     {
-        HtmlDomLoaderImpl:function()
+        HtmlDomLoaderImpl:function(elementTag)
         {
-            this.mExtensions = {
-                img:new RegExp("^(gif|jpeg|jpg|png)", "i"),
-                video:new RegExp("^(264|3g2|3gp|3gpp|avc|avi|h264|m4v|mkv|mp4|mpeg|mpg|ogg|ogv|webm)", "i"),
-                audio:new RegExp("^(aac|m4a|mp3|oga|ogg|wav)", "i")
-            };
+            this.mTag = elementTag;
         },
-        destroy:function() {},
+        destroy:function() {}
+    },
+    $override:
+    {
+        setting:function(requestParams, requestOption)
+        {
+            this.$super("setting")(
+                requestParams,
+                eq.isUndefined(requestOption) ?
+                cls.config.loaderOptionTemplate.htmlDom:
+                    requestOption);
+        },
+        _setLoader:function()
+        {
+            this.mLoader = cm.dom.util.createElement(this.mTag);
+            cm.dom.event.addEventListener(cm.event.Event.LOAD, this.mLoader, this.$bind('onComplete'), true);
+            cm.dom.event.addEventListener(cm.event.Event.ERROR, this.mLoader, this.$bind('onError'), true);
+        },
+        _resetLoader:function()
+        {
+            var _loader = this.mLoader;
+            this.mLoader = null;
+            cm.dom.event.removeEventListener(cm.event.Event.LOAD, _loader, this.$bind('onComplete'), true);
+            cm.dom.event.removeEventListener(cm.event.Event.ERROR, _loader, this.$bind('onError'), true);
+        },
         
-        create:function(url, param, option)
+        request:function()
         {
-            var _tagName = this._switchTagName(url.split(".").pop());
-            if (cm.equal.isNull(_tagName))
-                return null;
-            else
-            {
-                var _element = cm.dom.d.createElement(_tagName);
-                this.initializeLoader(_element);
-                this.attachCustomProperty(_element, url, param, option);
-                return _element;
-            }
+            this.$super("request")();
+
+            var _query = this.mParams.createGetQuery();
+            this.mLoader.src = this.mParams.url() + (_query == "" ? "": "?" + _query);
         },
-        _switchTagName:function(extension)
+
+        onComplete:function(response)
         {
-            for (var tagName in this.mExtensions)
-                if (extension.match(this.mExtensions[tagName]))
-                    return tagName;
-            return null;
-        },
-        request:function(loaderObject)
-        {
-            var _arg = loaderObject.cmArgumentsCache;
-            var _url = _arg[0];
-            var _param = _arg[1];
-            
-            this.$super("request")(loaderObject);
-            loaderObject.src = _url + _param;
-        },
-        initializeLoader:function(loaderObject)
-        {
-            cm.dom.addEventListener(cm.event.Event.LOAD, loaderObject, this.$bind("onComplete"), true);
-            cm.dom.addEventListener(cm.event.Event.ERROR, loaderObject, this.$bind("onError"), true);
-        },
-        resetLoader:function(loaderObject)
-        {
-            this.$super("resetLoader")(loaderObject);
-            cm.dom.removeEventListener(cm.event.Event.LOAD, loaderObject, this.$bind("onComplete"), true);
-            cm.dom.removeEventListener(cm.event.Event.ERROR, loaderObject, this.$bind("onError"), true);
-            this.detachCustomProperty(loaderObject);
-        },
-        onError:function(e) { this.$super("onError")(e.target); },
-        onComplete:function(e) { this.$super("onComplete")(e.target); }
+            this.$super("onComplete")(response.target);
+        }
     }
 });

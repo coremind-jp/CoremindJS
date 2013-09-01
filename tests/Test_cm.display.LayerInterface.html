@@ -1,0 +1,39 @@
+<html>
+<head>
+    <title>Test_cm.display.LayerInterface.html</title>
+    <script type="application/javascript" src="../jscls.js"></script>
+    <script type="application/javascript">
+    cm.Class.using("cm.display.LayerInterface");
+    function main()
+    {
+        var li = cm.display.LayerInterface;
+        var _p  = { name:"p" };
+        var _c1 = { name:"c1" };
+        var _c2 = { name:"c2" };
+        var _c3 = { name:"c3" };
+        var _c4 = { name:"c4" };
+        var _c5 = { name:"c5" };
+        var _c6 = { name:"c6" };
+        var _c7 = { name:"c7" };
+        var _c8 = { name:"c8" };
+        
+        li.add(li.root, _p);
+        li.add(_p, _c1);
+        li.add(_c1, _c4);
+        li.add(_c1, _c7);
+        li.add(_c1, _c8, 0);
+        //li.remove(_c1, true);
+        li.add(_p, _c2);
+        li.add(_p, _c3);
+        li.add(_c8, _c5);
+        li.add(_c3, _c6);
+        li.at(_c4, 5);
+        out.d(li.contains(_c1, _c2));
+        
+        li.forEach(function(){ out.d(this.name); }, li.root);
+    }
+    </script>
+</head>
+<body>
+</body>
+</html>

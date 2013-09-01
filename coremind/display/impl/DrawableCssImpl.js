@@ -1,5 +1,7 @@
-cm.Class.create(
-    "cm.core.BrowserInterface",
+cls.exports(
+    "cm.display.abs.Border",
+    "cm.core.CssInterface",
+    "cm.core.DomInterface",
 {
     /** @name cm.display */
     $name:"cm.display.impl.DrawableCssImpl",
@@ -7,132 +9,96 @@ cm.Class.create(
     $define:
     /** @lends cm.display.impl.DrawableCssImpl.prototype */
     {
-        mContentParentStyle:null,
-        mContentStyle:null,
-        
-        DrawableCssImpl:function(cmDisplay)
+        DrawableCssImpl:function(cmDisplay, forcedAbsolute)
         {
-            if (cm.equal.isUndefined(this.mContent.nodeType)
-            ||  this.mContent.nodeType != 1)
-                cm.log.e("target is not HTMLElement");
+            if (!cm.dom.util.isHtmlDomElement(cmDisplay.parent))
+                out.e("target is not HTMLElement");
                 
-            this.mContentParentStyle = this.mContentParent.style;
+            this.mContent = cmDisplay.parent;
             this.mContentStyle = this.mContent.style;
-            
-            this._appendCssTemplate();
+            if (forcedAbsolute) this.mContentStyle.position = "absolute";
         },
-        destroy:function() {},
-        
-        _appendCssTemplate:function()
-        {
-            cm.css.appendRule(".absoluteFit",
-                cm.string.concat(
-                    "position: absolute;",
-                    "left:0px;",
-                    "top:0px;",
-                    "width:100%;",
-                    "height:100%"),
-                cm.css.ruleLength());
-                
-            cm.css.appendRule(".relativeFit",
-                cm.string.concat(
-                    "position: relative;",
-                    "left:0px;",
-                    "top:0px;",
-                    "width:100%;",
-                    "height:100%"),
-                cm.css.ruleLength());
-        },
-        
+        destroy:function() {}
+    },
+    $override:
+    {
         applySorceParameters:function()
         {
-            cm.css.applyPosition(this.mContent.cmDisplay, this.mContentParentStyle);
-            cm.css.applyContainer(this.mContent.cmDisplay, this.mContentParentStyle);
+            if (this.mContent.parentNode)
+            {
+                cm.css.applyPosition(this.mContent.cmDisplay, this.mContentStyle);
+                cm.css.applyContainer(this.mContent.cmDisplay, this.mContentStyle);
+            }
         },
-        
-        //Position
+
+        //toplevel
+        updateVisible:function(val) {
+            this.mContentStyle.visibility = Boolean(val) ? "visible": "hidden";
+        },
+        updateAlpha:function(val) {
+            this.mContentStyle.opacity = val;
+        },
+
+        //border
+        updateBorderWeight:function(val) {
+            this.mContentStyle.borderWidth = val + "px";
+        },
+        updateBorderStyle:function(val)
+        {
+            switch (val)
+            {
+                case cm.display.abs.Border.DASH:
+                    this.mContentStyle.borderStyle = "dashed";
+                    break;
+                case cm.display.abs.Border.DOT:
+                    this.mContentStyle.borderStyle = "dotted";
+                    break;
+                case cm.display.abs.Border.DOUBLE:
+                    this.mContentStyle.borderStyle = "double";
+                    break;
+                default:
+                    this.mContentStyle.borderStyle = "solid";
+                    break;
+            }
+        },
+        updateBorderColor:function(color) {
+            this.mContentStyle.borderColor = cm.css.colorToRgbString(color);
+        },
+        disabledBorder:function() {
+            this.mContentStyle.borderStyle = "none";
+        },
+
+        //position
         updateX:function(val) {
-            this.mContentParentStyle.left = val + "px";
+            this.mContentStyle.left = val + "px";
         },
         updateY:function(val) {
-            this.mContentParentStyle.top = val + "px";
+            this.mContentStyle.top = val + "px";
         },
         
         //container
         updateWidth:function(val) {
-            this.mContentStyle.width = this.mContentParentStyle.width = val + "px";
+            this.mContentStyle.width = val + "px";
         },
         updateHeight:function(val) {
-            this.mContentStyle.height = this.mContentParentStyle.height = val + "px";
+            this.mContentStyle.height = val + "px";
         },
-        updateColor:function(color)
+
+        //background
+        updateBackgroundColor:function(color) {
+            this.mContentStyle.backgroundColor = cm.css.colorToRgbaString(color);
+        },
+        updateBackgroundImage:function(imageData)
         {
-            this.mContentStyle.backgroundColor = 
-                color.a() > 0 ?
-                    "#" + color.rgb().toString(16):
-                    "transparent";
+            var _origin = imageData.origin();
+            this.mContentStyle.background = ex.string.concat(
+                "url(", imageData.source(), ")",
+                imageData.repeat(), " ",
+                (_origin.horizontal() * 100 | 0), "% ",
+                (_origin.vertical() * 100 | 0), "%");
         },
-        updateImage:function(imageData) {
-            this.mStyle.backgroundImage = cm.string.concat("url(", imageData.source(), ")");
-        },
-        
-        
-        _tryCreateBottomLayer:function()
-        {
-            this._tryCreateParent();
-            this._tryCreateLayer("mBottomLayer", "cmBottomLayer");
-            this.mContentParent.insertBefore(this.mBottomLayer, this.mContentParent.firstChild);
-        },
-        _tryCreateBottomMaskLayer:function()
-        {
-            this._tryCreateParent();
-            this._tryCreateLayer("mBottomMaskLayer", "cmBottomMaskLayer");
-            this.mBottomMaskLayer.style.overflow = "hidden";
-            this.mBottomLayer.appendChild(this.mBottomMaskLayer);
-        },
-        _tryCreateTopLayer:function()
-        {
-            this._tryCreateParent();
-            this._tryCreateLayer("mTopLayer", "cmTopLayer");
-            this.mContentParent.insertBefore(this.mTopLayer, this.mContentParent.lastChild);
-        },
-        _tryCreateTopMaskLayer:function()
-        {
-            this._tryCreateParent();
-            this._tryCreateLayer("mTopMaskLayer", "cmTopMaskLayer");
-            this.mTopMaskLayer.style.overflow = "hidden";
-            this.mTopLayer.appendChild(this.mTopMaskLayer);
-        },
-        _tryCreateLayer:function(propertyName, elementName)
-        {
-            if (cm.equal.isNull(this[propertyName]))
-            {
-                var _element = document.createElement("div");
-                _element.name = elementName;
-                _element.className = "absoluteFit";
-                this[propertyName] = _element;
-            }
-        },
-        _tryCreateParent:function()
-        {
-            if (this.mContent === this.mContentParent)
-            {
-                this.mContentParent = document.createElement("div");
-                this.mContentParent.name = "cmContentParent";
-                this.mContentParentStyle = this.mContentParent.style;
-                this.mContentParentStyle.position = this.mContentStyle.position;
-                
-                this.mContentStyle.left = this.mContentStyle.top = "0px";
-                this.mContent.parentNode.insertBefore(this.mContentParent, this.mContent);
-                this.mContentParent.appendChild(this.mContent);
-                
-                var p = this.mContent.cmDisplay.position;
-                var c = this.mContent.cmDisplay.container;
-                this.updateX(p.x());
-                this.updateY(p.y());
-                this.updateWidth(c.width());
-                this.updateHeight(c.height());
-            }
+        disabledBackground:function() {
+            this.mContentStyle.background = "";
         }
         
     }

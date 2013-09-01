@@ -1,4 +1,4 @@
-cm.Class.create(
+cls.exports(
 {
     $name:"cm.core.UserAgent",
     $singleton:true,
@@ -32,7 +32,6 @@ cm.Class.create(
             Symbian:6,
             BlackBerry:7
         },
-        VendorPrefix:["", "webkit", "moz", "ms", "O"],
         VendorName:["Unknown", "WebKit", "Mozilla", "MicroSoft", "Opera"],
         BrowserName:["Unknown", "Chrome", "Safari", "FireFox", "Mozilla", "InternetExplorer", "Opera", "NetScape", "Lunascape"],
         PlatformName:["Pc", "Android", "iPhone", "iPad", "iPod", "WindowsPhone", "Symbian", "BlackBerry"]
@@ -43,31 +42,53 @@ cm.Class.create(
         {
             var ua = navigator.userAgent;
             this.vendor = this.getVendor(ua);
-            this.vendorPrefix = this.getVendorPrefix();
             this.platform = this.getPlatform(ua);
             this.platformVersion = this.getPlatformVersion(ua);
             this.browser = this.getBrowser(ua);
             this.browserVersion = this.getBrowserVersion(ua);
+
+            this.log(
+                "Vendor:", this.getVendorName(),
+                "Browser:", this.getBrowserName(),
+                "Version:", this.browserVersion);
         },
         destroy:function() {},
+        
         isAndroid:function() {
-            return this.platform == cm.core.UserAgent.Platform.Android
+            return this.platform == this.$class.Platform.Android;
         },
         isiPhone:function() {
-            return this.platform == cm.core.UserAgent.Platform.iPhone
+            return this.platform == this.$class.Platform.iPhone;
         },
         isiPad:function() {
-            return this.platform == cm.core.UserAgent.Platform.iPad
+            return this.platform == this.$class.Platform.iPad;
         },
         isiPod:function() {
-            return this.platform == cm.core.UserAgent.Platform.iPod
+            return this.platform == this.$class.Platform.iPod;
         },
         isWindowsPhone:function() {
-            return this.platform == cm.core.UserAgent.Platform.iPod
+            return this.platform == this.$class.Platform.iPod;
         },
         isMobile:function() {
             return this.Platform.Pc < this.platform;
         },
+
+        isChrome:function() {
+            return this.browser == this.$class.Browser.Chrome;
+        },
+        isSafari:function() {
+            return this.browser == this.$class.Browser.Safari;
+        },
+        isFireFox:function() {
+            return this.browser == this.$class.Browser.FireFox;
+        },
+        isOpera:function() {
+            return this.browser == this.$class.Browser.Opera;
+        },
+        isInternetExplorer:function() {
+            return this.browser == this.$class.Browser.InternetExplorer;
+        },
+
         isRequiredVersionByBrowser:function(version) {
             this._isRequiredVersion(version, this.browserVersion);
         },
@@ -93,150 +114,139 @@ cm.Class.create(
         getVendor:function(ua)
         {
             if (ua.match(/opera/i))
-                return cm.core.UserAgent.Vendor.Opera;
+                return this.$class.Vendor.Opera;
             else
             if (ua.match(/msie/i))
-                return cm.core.UserAgent.Vendor.MicroSoft;
+                return this.$class.Vendor.MicroSoft;
             else
             if (ua.match(/webkit/i))
-                return cm.core.UserAgent.Vendor.WebKit;
+                return this.$class.Vendor.WebKit;
             else
             if (ua.match(/(gecko|mozilla)/i))
-                return cm.core.UserAgent.Vendor.Mozilla;
+                return this.$class.Vendor.Mozilla;
             else
-                return cm.core.UserAgent.Vendor.Unknown;
+                return this.$class.Vendor.Unknown;
         },
         getVendorName:function() {
-            return cm.core.UserAgent.VendorName[this.vendor];
+            return this.$class.VendorName[this.vendor];
         },
         getPlatform:function(ua)
         {
             if (ua.match(/android/i))
-                return cm.core.UserAgent.Platform.Android;
+                return this.$class.Platform.Android;
             else
             if (ua.match(/ipod/i))
-                return cm.core.UserAgent.Platform.iPod;
+                return this.$class.Platform.iPod;
             else
             if (ua.match(/iphone/i))
-                return cm.core.UserAgent.Platform.iPhone;
+                return this.$class.Platform.iPhone;
             else
             if (ua.match(/ipad/i))
-                return cm.core.UserAgent.Platform.iPad;
+                return this.$class.Platform.iPad;
             else
             if (ua.match(/windows phone/i))
-                return cm.core.UserAgent.Platform.WindowsPhone;
+                return this.$class.Platform.WindowsPhone;
             else
             if (ua.match(/blackberry/i))
-                return cm.core.UserAgent.Platform.BlackBerry;
+                return this.$class.Platform.BlackBerry;
             else
             if (ua.match(/symbian/i))
-                return cm.core.UserAgent.Platform.Symbian;
+                return this.$class.Platform.Symbian;
             else
-                return cm.core.UserAgent.Platform.Pc;
+                return this.$class.Platform.Pc;
         },
         getPlatformName:function() {
-            return cm.core.UserAgent.PlatformName[this.platform];
+            return this.$class.PlatformName[this.platform];
         },
         getPlatformVersion:function(ua)
         {
+            var P = this.$class.Platform;
             ua = ua.toLowerCase();
             switch (this.getPlatform(ua))
             {
-                case cm.core.UserAgent.Platform.Pc:
+                case P.Pc:
                     return "0";
                     
-                case cm.core.UserAgent.Platform.Android:
+                case P.Android:
                     var _match = ua.match(/android ?[0-9|\.]+[;|-]/);
                     if (_match)
                         return ua.match(/android ?[0-9|\.]+[;|-]/)[0].toString()
-                            .replace("android", "")
-                            .replace(" ", "")
-                            .replace("-", "")
-                            .replace(";", "");
+                            .replace(/android|[ ;\-]/g, "");
                     else
                         return "0";//firefox browser
                         
-                case cm.core.UserAgent.Platform.iPhone:
-                case cm.core.UserAgent.Platform.iPad:
+                case P.iPhone:
+                case P.iPad:
                     return ua.match(/os ?[0-9|_]+ ?like/)[0].toString().split("_").join(".")
                         .replace("_", ".")
-                        .replace("os", "")
-                        .replace(" ", "")
-                        .replace("like", "");
+                        .replace("/os|like|[ ]/g", "");
                         
-                case cm.core.UserAgent.Platform.iPod:
+                case P.iPod:
                     if (ua.match(/mobile\/3a100a/))
                         return "2.0";
                     else
                         return ua.match(/os ?[0-9|_]+? ?like/)[0].toString().split("_").join(".")
                             .replace("_", ".")
-                            .replace("os", "")
-                            .replace(" ", "")
-                            .replace("like", "");
+                            .replace(/os|like|[ ]/g, "");
                             
-                case cm.core.UserAgent.Platform.WindowsPhone:
+                case P.WindowsPhone:
                     return ua.match(/windows phone (os )?[0-9|\.]+;?/)[0].toString()
-                        .replace("windows phone ", "")
-                        .replace("os ", "")
-                        .replace(";", "");
+                        .replace(/windows phone |os|;/g, "");
                         
-                case cm.core.UserAgent.Platform.BlackBerry:
+                case P.BlackBerry:
                     var _match = ua.match(/blackberry ?[0-9]+;?/);
                     if (_match)
-                        return _match[0].toString()
-                            .replace("blackberry", "")
-                            .replace(" ", "");
+                        return _match[0].toString().replace(/blackberry|[\s]/g, "");
                     else
                         return "0";//opera browser
                         
-                case cm.core.UserAgent.Platform.Symbian:
+                case P.Symbian:
                     return ua.match(/symbian(os)?\/[0-9|\.]+;?/)[0].toString()
-                        .replace("symbian", "")
-                        .replace("os", "")
-                        .replace("/", "")
-                        .replace(";", "");
+                        .replace(/symbian|os|[\/;]/g, "");
             }
         },
         getBrowser:function(ua)
         {
+            var B = this.$class.Browser;
             if (ua.match(/opera/i))
-                return cm.core.UserAgent.Browser.Opera;
+                return B.Opera;
             else
             if (ua.match(/firefox/i))
-                return cm.core.UserAgent.Browser.FireFox;
+                return B.FireFox;
             else
             if (ua.match(/netscape/i))
-                return cm.core.UserAgent.Browser.NetScape;
+                return B.NetScape;
             else
             if (ua.match(/lunascape/i))
-                return cm.core.UserAgent.Browser.Lunascape;
+                return B.Lunascape;
             else
             if (ua.match(/chrome/i))
-                return cm.core.UserAgent.Browser.Chrome;
+                return B.Chrome;
             else
             if (ua.match(/safari|Mobile\/8L1|Mobile\/7B405|Mobile\/8C134/i))
-                return cm.core.UserAgent.Browser.Safari;
+                return B.Safari;
             else
             if (ua.match(/msie/i))
-                return cm.core.UserAgent.Browser.InternetExplorer;
+                return B.InternetExplorer;
             else
             if (ua.match(/mozilla/i))//ver 0.0~4.9
-                return cm.core.UserAgent.Browser.Mozilla;
+                return B.Mozilla;
             else
-                return cm.core.UserAgent.Browser.Unknown;
+                return B.Unknown;
         },
         getBrowserName:function() {
-            return cm.core.UserAgent.BrowserName[this.browser];
+            return this.$class.BrowserName[this.browser];
         },
         getBrowserVersion:function(ua)
         {
+            var B = this.$class.Browser;
             ua = ua.toLowerCase();
             switch (this.getBrowser(ua))
             {
-                case cm.core.UserAgent.Browser.Unknown:
+                case B.Unknown:
                     return "0";
                 
-                case cm.core.UserAgent.Browser.Opera:
+                case B.Opera:
                     var _match = ua.match(/^opera\/[0-9|\.]+/);
                     if (_match)
                     {
@@ -251,17 +261,17 @@ cm.Class.create(
                             .replace("opera", "")
                             .replace(" ", "");
                             
-                case cm.core.UserAgent.Browser.FireFox:
+                case B.FireFox:
                     return ua.match(/firefox\/[0-9|\.]+/)[0].toString().replace("firefox/", "");
                     
-                case cm.core.UserAgent.Browser.NetScape:
+                case B.NetScape:
                     var _match = ua.match(/netscape6\/[0-9|\.]+/);
                     if (_match)
                         return _match[0].toString().replace("netscape6/", "");
                     else
                         return ua.match(/netscape\/[0-9|\.]+/)[0].toString().replace("netscape/", "");
                         
-                case cm.core.UserAgent.Browser.Mozilla:
+                case B.Mozilla:
                     var _match = ua.match(/mozilla\/[0-4]\.[0-9|\.]+/);
                     if (_match)
                         return _match[0].toString().replace("mozilla/", "");
@@ -271,15 +281,15 @@ cm.Class.create(
                     else
                         return "0";//symbian os3
                         
-                case cm.core.UserAgent.Browser.Lunascape:
+                case B.Lunascape:
                     return ua.match(/lunascape ?[0-9|\.]+/)[0].toString()
                         .replace("lunascape", "")
                         .replace(" ", "");
                         
-                case cm.core.UserAgent.Browser.Chrome:
+                case B.Chrome:
                     return ua.match(/chrome\/[0-9|\.]+/)[0].toString().replace("chrome/", "");
                     
-                case cm.core.UserAgent.Browser.Safari:
+                case B.Safari:
                     var _match = ua.match(/applewebkit\/(85|[1-3][0-9\.]+)/);
                     if (_match)
                         return "1.0";
@@ -292,14 +302,11 @@ cm.Class.create(
                     else
                         return "0";//unknown
                 
-                case cm.core.UserAgent.Browser.InternetExplorer:
+                case B.InternetExplorer:
                     return ua.match(/msie ?[0-9|\.]+/)[0].toString()
                         .replace("msie", "")
                         .replace(" ", "");
             }
-        },
-        getVendorPrefix:function() {
-            return cm.core.UserAgent.VendorPrefix[this.vendor];
         }
     }
 });

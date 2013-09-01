@@ -1,7 +1,11 @@
-cm.Class.create(
+cls.exports(
 {
     $name:"cm.util.UpdateDispatcher",
     $singleton:true,
+    $defaultConfig:{
+        /* UpdateDispatcherの更新間隔をミリセカンドで指定します. */
+        refreshRate:1000/60
+    },
     $define:
     {
         UpdateDispatcher:function()
@@ -9,6 +13,7 @@ cm.Class.create(
             this.intervalId = null;
             this._enabledUpdaters = [];
             this._disabledUpdaters = [];
+            this._drawableUpdater = function(){};
             this.start();
         },
         destroy:function(){
@@ -21,18 +26,20 @@ cm.Class.create(
             this.latestDateNow = Date.now();
             this.elapsed = 0;
             this.delta = 0;
-            var _this = this;
-            this.intervalId = setInterval(function dispatch() {
-                _this.dispatch();
-            }, 1000 / 60);
+            this.intervalId = setInterval(
+                this.$bind("dispatch"),
+                this.getConfig().refreshRate);
         },
         stop:function()
         {
-            if (!cm.equal.isNull(this.intervalId))
+            if (!eq.isNull(this.intervalId))
             {
                 clearInterval(this.intervalId);
                 this.intervalId = null;
             }
+        },
+        setDrawableUpdater:function(updater) {
+            this._drawableUpdater = updater;
         },
         addUpdater:function(updater)
         {
@@ -51,7 +58,12 @@ cm.Class.create(
         },
         dispatch:function()
         {
-            this._refreshEnabledUpdaters();
+            //refreshEnabledUpdaters
+            while(this._disabledUpdaters.length > 0)
+            {
+                var _index = this._enabledUpdaters.indexOf(this._disabledUpdaters.shift());
+                if (_index >= 0) this._enabledUpdaters.splice(_index, 1);
+            }
             
             var _enabledUpdaters = this._enabledUpdaters;
             var _dateNow = Date.now();
@@ -69,14 +81,8 @@ cm.Class.create(
                     --_len;
                 }
             }
-        },
-        _refreshEnabledUpdaters:function()
-        {
-            while(this._disabledUpdaters.length > 0)
-            {
-                var _index = this._enabledUpdaters.indexOf(this._disabledUpdaters.shift());
-                if (_index >= 0) this._enabledUpdaters.splice(_index, 1);
-            }
+
+            this._drawableUpdater();
         }
     }
 });

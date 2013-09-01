@@ -1,4 +1,4 @@
-cm.Class.create(
+cls.exports(
 {
     /** @name cm.util */
     $name:"cm.display.abs.fill.Color",
@@ -34,12 +34,13 @@ cm.Class.create(
         {
             this.mHex = {};
             this.mRatio = {};
-            this.argbAbs(hex ? hex: 0);
+            this.argbAbs(eq.isNumber(hex) ? hex: 0);
         },
         destroy:function() {},
         
         argb:function() {
-            return (this.a() << 24) + this.rgb();
+            var _a = this.a(); _a = _a > 0 ? _a * (1 << 24): 0;
+            return _a + this.rgb();
         },
         argbAbs:function(hex)
         {
@@ -51,10 +52,12 @@ cm.Class.create(
         },
         
         rgb:function() {
-            return cm.string.concat(
-                ("0" + this.r().toString(16)).slice(-2),
-                ("0" + this.g().toString(16)).slice(-2),
-                ("0" + this.b().toString(16)).slice(-2));
+            var _r = this.r(); _r = _r > 0 ? _r * (1 << 16): 0;
+            var _g = this.g(); _g = _g > 0 ? _g * (1 << 8): 0;
+            return _r + _g + this.b();
+        },
+        rgbStr:function() {
+            return new String("000000" + this.rgb().toString(16)).slice(-6);
         },
         
         //alpha
@@ -69,7 +72,7 @@ cm.Class.create(
         },
         aRatio:function()
         {
-            if (cm.equal.isUndefined(this.mRatio.alpha))
+            if (eq.isUndefined(this.mRatio.alpha))
                 this.mRatio.alpha = this.a() / 0xFF;
             return this.mHex.alpha / 0xFF;
         },
@@ -85,7 +88,7 @@ cm.Class.create(
         },
         rRatio:function()
         {
-            if (cm.equal.isUndefined(this.mRatio.red))
+            if (eq.isUndefined(this.mRatio.red))
                 this.mRatio.red = this.r() / 0xFF;
             return this.mRatio.red;
         },
@@ -101,7 +104,7 @@ cm.Class.create(
         },
         gRatio:function()
         {
-            if (cm.equal.isUndefined(this.mRatio.green))
+            if (eq.isUndefined(this.mRatio.green))
                 this.mRatio.green = this.g() / 0xFF;
             return this.mRatio.green;
         },
@@ -117,7 +120,7 @@ cm.Class.create(
         },
         bRatio:function()
         {
-            if (cm.equal.isUndefined(this.mRatio.blue))
+            if (eq.isUndefined(this.mRatio.blue))
                 this.mRatio.blue = this.b() / 0xFF;
             return this.mRatio.blue;
         },
@@ -148,8 +151,8 @@ cm.Class.create(
         /**
          * 文字列表現を取得します.
          */
-        toString:function() {
-            return this.argb().toString(16);
+        dumpProp:function() {
+            this.log("0x"+this.argb().toString(16));
         }
     }
 });

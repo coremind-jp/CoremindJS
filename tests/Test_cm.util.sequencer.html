@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="../html5reset-1.6.1.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../config.js"></script>
+    <script type="text/javascript" src="../jscls.js"></script>
+</head>
+<body style="background-color:#bbb;">
+    
+</style>
+    <script type="text/javascript">
+    var elem = document.createElement("div");
+    //ex.object.dump(elem.style);
+    var _class = "cm.util.sequence.Sequencer";
+    document.title = _class;
+    cls.require(
+        "cm.util.sequence.que.InstantQue",
+        "cm.util.sequence.que.TimerQue",
+        "cm.util.sequence.que.CallbackQue",
+        "cm.util.sequence.que.EventQue",
+        "cm.display.abs.fill.Color",
+        "cm.motion.Tween",
+        "cm.motion.Tweener",
+        "cm.motion.Easing",
+        "cm.core.DisplayInterface",
+        "cm.display.abs.fill.Gradient",
+        "cm.display.abs.filter.Shadow",
+        _class,
+    function main()
+    {
+        var es = [];
+        var e;
+        var E  = cm.motion.Easing;
+        var _easing = [
+            E.Linear,
+            E.SineIn,
+            E.SineOut,
+            E.SineInOut,
+            E.QuadIn,
+            E.QuadOut,
+            E.QuadInOut,
+            E.CubicIn,
+            E.CubicOut,
+            E.CubicInOut,
+            E.QuartIn,
+            E.QuartOut,
+            E.QuartInOut,
+            E.QuintIn,
+            E.QuintOut,
+            E.QuintInOut,
+            E.ExpoIn,
+            E.ExpoOut,
+            E.ExpoInOut,
+            E.BackIn,
+            E.BackOut,
+            E.BackInOut,
+            E.ElasticIn,
+            E.ElasticOut,
+            E.ElasticInOut,
+            E.BounceIn,
+            E.BounceOut,
+            E.BounceInOut
+        ];
+        var randEasing = function() {
+            return _easing[parseInt(Math.random() * _easing.length)];
+        };
+        var randDuration = function() {
+            return 1500 + parseInt(Math.random() * 1500);
+        };
+
+        e = createCmDisplay("plain");
+        e.id = "dumper";
+        es.push(e);
+
+        e = createCmDisplay("plain");
+        e.cmDisplay.border.weightAbs(2).setStyle(cm.display.abs.Border.SOLID).editColor().argbAbs(0xFF0000FF);
+        e.cmDisplay.background.editColor().argbAbs(0xFFFF0000);
+        e.cmDisplay.transform.editOrigin().horizontalAbs(.5).verticalAbs(.5);
+        es.push(e);
+
+        var Tr = cm.motion.Tweener;
+        var T  = cm.motion.Tween;
+        var Q  = cm.util.sequence.que;
+        var sss = new cm.util.sequence.Sequencer()
+        var _x = new Tr().add(new T(e).property("$.position.x").toAbsolute(200).easing(randEasing()));
+        var moveX = new Q.CallbackQue(_x).method("start").args(500, 1).observeCallbackName("onComplete");
+
+        var _y = new Tr().add(new T(e).property("$.position.y").toAbsolute(200).easing(randEasing()));
+        var moveY = new Q.CallbackQue(_y).method("start").args(500, 1).observeCallbackName("onComplete");
+
+        var transition = randEasing();
+        var _s = new Tr()
+            .add(new T(e).property("$.transform.scaleX").toAbsolute(2).easing(transition))
+            .add(new T(e).property("$.transform.scaleY").toAbsolute(2).easing(transition));
+        var transform = new Q.CallbackQue(_s).method("start").args(500, 1).observeCallbackName("onComplete");
+
+        var reverseTween = { toggle:function() { _x.toggleReverse(); _y.toggleReverse(); _s.toggleReverse() } };
+            reverseTween = new Q.InstantQue(reverseTween).method("toggle");
+
+        var click = new Q.EventQue(e).method()
+        sss.setSequence(moveX, moveY, transform, reverseTween);
+        sss.begin(transform);
+        sss.linked = true;
+
+        return;
+
+        e = createCmDisplay("alpha");
+        e.cmDisplay.alphaAbs(1);
+        es.push(e);
+        new Tr().add(new T(e)
+            .property("$.alpha")
+            .toAbsolute(0)
+            .easing(randEasing())).start(randDuration(), 1);
+
+        e = createCmDisplay("border dash");
+        e.cmDisplay.border.weightAbs(5).setStyle(cm.display.abs.Border.DASH).editColor().argbAbs(0xFF00FF00);
+        es.push(e);
+
+        e = createCmDisplay("border dot");
+        e.cmDisplay.border.weightAbs(5).setStyle(cm.display.abs.Border.DOT).editColor().argbAbs(0xFF0000FF);
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.border.color.argb")
+                .toAbsolute(0xFF00FF00)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        e = createCmDisplay("border double");
+        e.cmDisplay.border.weightAbs(20).setStyle(cm.display.abs.Border.DOUBLE).editColor().argbAbs(0xFFFFFF00);
+        e.cmDisplay.container.editShape().applyCircle();
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.border.weight")
+                .toAbsolute(10)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        //container test
+        e = createCmDisplay("container shape round");
+        e.cmDisplay.container.editShape().roundAbs(20);
+        e.cmDisplay.background.editColor().argbAbs(0xFFFFFFFF);
+        e.cmDisplay.border.weightAbs(1).setStyle(cm.display.abs.Border.SOLID).editColor().argbAbs(0xFFFF0000);
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.container.shape.round")
+                .toAbsolute(65)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        e = createCmDisplay("container shape round top/left");
+        e.cmDisplay.container.editShape().topLeftCornerAbs(20, 20);
+        e.cmDisplay.background.editColor().argbAbs(0xFFFFFFFF);
+        e.cmDisplay.border.weightAbs(1).setStyle(cm.display.abs.Border.SOLID).editColor().argbAbs(0xFFFF0000);
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.container.shape.topLeftCorner")
+                .toAbsolute(65)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        e = createCmDisplay("container shape round top/right");
+        e.cmDisplay.container.editShape().topRightCornerAbs(20, 20);
+        e.cmDisplay.background.editColor().argbAbs(0xFFFFFFFF);
+        e.cmDisplay.border.weightAbs(1).setStyle(cm.display.abs.Border.SOLID).editColor().argbAbs(0xFFFF0000);
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.container.shape.topRightCorner")
+                .toAbsolute(65)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        e = createCmDisplay("container shape round bottom/right");
+        e.cmDisplay.container.editShape().bottomRightCornerAbs(20, 20);
+        e.cmDisplay.background.editColor().argbAbs(0xFFFFFFFF);
+        e.cmDisplay.border.weightAbs(1).setStyle(cm.display.abs.Border.SOLID).editColor().argbAbs(0xFFFF0000);
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.container.shape.bottomRightCorner")
+                .toAbsolute(65)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        e = createCmDisplay("container shape round bottom/left");
+        e.cmDisplay.container.editShape().bottomLeftCornerAbs(20, 20);
+        e.cmDisplay.background.editColor().argbAbs(0xFFFFFFFF);
+        e.cmDisplay.border.weightAbs(1).setStyle(cm.display.abs.Border.SOLID).editColor().argbAbs(0xFFFF0000);
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.container.shape.bottomLeftCorner")
+                .toAbsolute(65)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        e = createCmDisplay("container shape circle");
+        e.cmDisplay.container.editShape().applyCircle();
+        e.cmDisplay.background.editColor().argbAbs(0xFFFFFFFF);
+        e.cmDisplay.border.weightAbs(1).setStyle(cm.display.abs.Border.SOLID).editColor().argbAbs(0xFFFF0000);
+        es.push(e);
+
+        //position test
+        e = createCmDisplay("position x and container widht");
+        e.cmDisplay.position.xRel(20);
+        e.cmDisplay.container.widthRel(-20);
+        e.cmDisplay.background.editColor().argbAbs(0xFFFFFFFF);
+        e.cmDisplay.border.weightAbs(1).setStyle(cm.display.abs.Border.SOLID).editColor().argbAbs(0xFF000000);
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.position.x")
+                .toRelative(-20)
+                .easing(randEasing()))
+            .add(new T(e)
+                .property("$.container.width")
+                .toRelative(20)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        e = createCmDisplay("position y and container height");
+        e.cmDisplay.position.yRel(20);
+        e.cmDisplay.container.heightRel(-20);
+        e.cmDisplay.background.editColor().argbAbs(0xFFFFFFFF);
+        e.cmDisplay.border.weightAbs(1).setStyle(cm.display.abs.Border.SOLID).editColor().argbAbs(0xFF000000);
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.position.y")
+                .toRelative(-20)
+                .easing(randEasing()))
+            .add(new T(e)
+                .property("$.container.height")
+                .toRelative(20)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        //background test
+        e = createCmDisplay("background color");
+        e.cmDisplay.background.editColor().argbAbs(0x3000FFFF);
+        e.cmDisplay.border.weightAbs(1).setStyle(cm.display.abs.Border.SOLID).editColor().argbAbs(0xFF000000);
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.background.color.argb")
+                .toAbsolute(0x30FFFFFF)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        var src = "../resource/logo.png";
+        e = createCmDisplay("background image align horizontal left");
+        e.cmDisplay.container.editShape().applyCircle();
+        e.cmDisplay.background.editImage()
+            .setRepeat(cm.display.abs.fill.ImageData.REPEAT.NONE)
+            .setSource(src)
+            .editOrigin().
+                applyLeft();
+        e.cmDisplay.border.weightAbs(1).setStyle(cm.display.abs.Border.SOLID).editColor().argbAbs(0xFF000000);
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.background.image.origin.horizontal")
+                .toAbsolute(1)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        e = createCmDisplay("background image align horizontal center");
+        e.cmDisplay.background.editImage().setSource(src).editOrigin().applyCenterH();
+        e.cmDisplay.border.weightAbs(1).setStyle(cm.display.abs.Border.SOLID).editColor().argbAbs(0xFF000000);
+        es.push(e);
+
+        e = createCmDisplay("background image align horizontal right");
+        e.cmDisplay.background.editImage().setSource(src).editOrigin().applyRight();
+        e.cmDisplay.border.weightAbs(1).setStyle(cm.display.abs.Border.SOLID).editColor().argbAbs(0xFF000000);
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.background.image.origin.horizontal")
+                .toAbsolute(0)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        e = createCmDisplay("background image align vertical top");
+        e.cmDisplay.container.editShape().applyCircle();
+        e.cmDisplay.background.editImage().setSource(src).editOrigin().applyTop();
+        e.cmDisplay.border.weightAbs(1).setStyle(cm.display.abs.Border.SOLID).editColor().argbAbs(0xFF000000);
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.background.image.origin.vertical")
+                .toAbsolute(1)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        e = createCmDisplay("background image align vertical center");
+        e.cmDisplay.background.editImage().setSource(src).editOrigin().applyCenterV();
+        e.cmDisplay.border.weightAbs(1).setStyle(cm.display.abs.Border.SOLID).editColor().argbAbs(0xFF000000);
+        es.push(e);
+
+        e = createCmDisplay("background image align vertical bottom");
+        e.cmDisplay.background.editImage().setSource(src).editOrigin().applyBottom();
+        e.cmDisplay.border.weightAbs(1).setStyle(cm.display.abs.Border.SOLID).editColor().argbAbs(0xFF000000);
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.background.image.origin.vertical")
+                .toAbsolute(0)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        e = createCmDisplay("background gradient liner");
+        e.cmDisplay.border.weightAbs(1).setStyle(cm.display.abs.Border.SOLID).editColor().argbAbs(0xFFFF0000);
+        e.cmDisplay.container.editShape().applyCircle();
+        var g = e.cmDisplay.background.editGradient();
+        g.editBeginColor().argbAbs(0xFF0000FF);
+        //g.linearDegreeAbs(45)
+        g.pushColor(0xFF00FFFF, 60)
+         .pushColor(0xFF00FF00, 40)
+         .pushColor(0xFFFFFF00, 20)
+         .pushColor(0xFFFF0000, 40)
+         .pushColor(0xFFFFFFFF, 60)
+         .setType(cm.display.abs.fill.Gradient.TYPE.LINER);
+        es.push(e);
+        new Tr()
+            .add(new T(e).toAbsolute(0xFFFFFFFF).property("$.background.gradient.beginColor.argb").easing(randEasing()))
+            .add(new T(e).toAbsolute(0xFFFF0000).property("$.background.gradient.color0.argb").easing(randEasing()))
+            .add(new T(e).toAbsolute(0xFFFFFF00).property("$.background.gradient.color1.argb").easing(randEasing()))
+            .add(new T(e).toAbsolute(0xFF00FF00).property("$.background.gradient.color2.argb").easing(randEasing()))
+            .add(new T(e).toAbsolute(0xFF00FFFF).property("$.background.gradient.color3.argb").easing(randEasing()))
+            .add(new T(e).toAbsolute(0xFF0000FF).property("$.background.gradient.color4.argb").easing(randEasing()))
+            .add(new T(e).toAbsolute(60).property("$.background.gradient.color0.weight").easing(randEasing()))
+            .add(new T(e).toAbsolute(20).property("$.background.gradient.color1.weight").easing(randEasing()))
+            .add(new T(e).toAbsolute(40).property("$.background.gradient.color2.weight").easing(randEasing()))
+            .add(new T(e).toAbsolute(20).property("$.background.gradient.color3.weight").easing(randEasing()))
+            .add(new T(e).toAbsolute(60).property("$.background.gradient.color4.weight").easing(randEasing()))
+            .add(new T(e).toAbsolute(360).property("$.background.gradient.linearDegree").easing(randEasing()))
+            .start(randDuration(), 1);
+
+        e = createCmDisplay("background gradient radial");
+        e.cmDisplay.border.weightAbs(1).setStyle(cm.display.abs.Border.SOLID).editColor().argbAbs(0xFFFF0000);
+        e.cmDisplay.container.editShape().topRightCornerAbs(20, 20);
+        var g = e.cmDisplay.background.editGradient();
+        g.editRadialOrigin().verticalAbs(.9).horizontalAbs(.1);
+        g.setRadialSize(
+            cm.display.abs.fill.Gradient.RADIAL_SIZE.FARTHEST_SIDE);
+        g.setRadialShape(cm.display.abs.fill.Gradient.RADIAL_SHAPE.ELLIPS);
+        g.editBeginColor().argbAbs(0xFF0000FF);
+        g.pushColor(0xFF00FFFF, 20)
+         .pushColor(0xFF00FF00, 40)
+         .pushColor(0xFFFFFF00, 60)
+         .pushColor(0xFFFF0000, 40)
+         .pushColor(0xFFFFFFFF, 20)
+         .setType(cm.display.abs.fill.Gradient.TYPE.RADIAL);
+        es.push(e);
+        new Tr()
+            .add(new T(e).toAbsolute(0xFFFFFFFF).property("$.background.gradient.beginColor.argb").easing(randEasing()))
+            .add(new T(e).toAbsolute(0xFFFF0000).property("$.background.gradient.color0.argb").easing(randEasing()))
+            .add(new T(e).toAbsolute(0xFFFFFF00).property("$.background.gradient.color1.argb").easing(randEasing()))
+            .add(new T(e).toAbsolute(0xFF00FF00).property("$.background.gradient.color2.argb").easing(randEasing()))
+            .add(new T(e).toAbsolute(0xFF00FFFF).property("$.background.gradient.color3.argb").easing(randEasing()))
+            .add(new T(e).toAbsolute(0xFF0000FF).property("$.background.gradient.color4.argb").easing(randEasing()))
+            .add(new T(e).toAbsolute(60).property("$.background.gradient.color0.weight").easing(randEasing()))
+            .add(new T(e).toAbsolute(20).property("$.background.gradient.color1.weight").easing(randEasing()))
+            .add(new T(e).toAbsolute(40).property("$.background.gradient.color2.weight").easing(randEasing()))
+            .add(new T(e).toAbsolute(20).property("$.background.gradient.color3.weight").easing(randEasing()))
+            .add(new T(e).toAbsolute(60).property("$.background.gradient.color4.weight").easing(randEasing()))
+            .add(new T(e).toAbsolute(.1).property("$.background.gradient.radialOrigin.vertical").easing(randEasing()))
+            .add(new T(e).toAbsolute(.9).property("$.background.gradient.radialOrigin.horizontal").easing(randEasing()))
+            .start(randDuration(), 1);
+
+        //transform test
+        e = createCmDisplay("transform originX and scaleX");
+        e.cmDisplay.border.weightAbs(20).setStyle(cm.display.abs.Border.DOUBLE).editColor().argbAbs(0xFFFF0000);
+        e.cmDisplay.transform.editOrigin().applyRight();
+        e.cmDisplay.transform.scaleXAbs(1.1);
+        e.cmDisplay.background.editColor().argbAbs(0xFFFFFFFF);
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.transform.scaleX")
+                .toAbsolute(.5)
+                .easing(randEasing()))
+            .add(new T(e)
+                .property("$.transform.origin.horizontal")
+                .toAbsolute(0)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        e = createCmDisplay("transform originY and scaleY");
+        e.cmDisplay.border.weightAbs(20).setStyle(cm.display.abs.Border.DOUBLE).editColor().argbAbs(0xFFFF0000);
+        e.cmDisplay.transform.editOrigin().applyCenterV().applyCenterH();
+        e.cmDisplay.transform.scaleYAbs(1.1);
+        e.cmDisplay.background.editColor().argbAbs(0xFFFFFFFF);
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.transform.scaleY")
+                .toAbsolute(.5)
+                .easing(randEasing()))
+            .add(new T(e)
+                .property("$.transform.origin.vertical")
+                .toAbsolute(0)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        e = createCmDisplay("transform originX/Y and rotationZ");
+        //e.cmDisplay.container.widthAbs(100).heightAbs(100);
+        e.cmDisplay.transform.editOrigin().verticalAbs(.5).horizontalAbs(.5);
+        e.cmDisplay.border.weightAbs(20).setStyle(cm.display.abs.Border.DOUBLE).editColor().argbAbs(0xFFFF0000);
+        e.cmDisplay.transform.rotationZAbs(20);
+        e.cmDisplay.transform.scaleYAbs(1).scaleXAbs(1);
+        e.cmDisplay.background.editColor().argbAbs(0xFFFFFFFF);
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.transform.rotationZ")
+                .toAbsolute(360)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        //filter(shadow) test
+        var shadowFilter;
+        shadowFilter = new cm.display.abs.filter.Shadow();
+        shadowFilter.editColor().argbAbs(0xFF000000);
+        shadowFilter.offsetSizeAbs(5);
+        e = createCmDisplay("filter shadow offsetSize");
+        e.cmDisplay.border.weightAbs(20).setStyle(cm.display.abs.Border.DOUBLE).editColor().argbAbs(0xFFFF0000);
+        e.cmDisplay.position.xRel(30).yRel(30);
+        e.cmDisplay.container.widthRel(-60).heightRel(-60);
+        e.cmDisplay.filters.add(shadowFilter);
+        e.cmDisplay.background.editColor().argbAbs(0xFFFFFFFF);
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.filters.filter0.offsetSize")
+                .toAbsolute(10)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        shadowFilter = new cm.display.abs.filter.Shadow();
+        shadowFilter.editColor().argbAbs(0xFF000000);
+        shadowFilter.radiusAbs(20);
+        e = createCmDisplay("filter shadow radius");
+        e.cmDisplay.container.editShape().applyCircle();
+        e.cmDisplay.border.weightAbs(20).setStyle(cm.display.abs.Border.DOUBLE).editColor().argbAbs(0xFFFF0000);
+        e.cmDisplay.position.xRel(30).yRel(30);
+        e.cmDisplay.container.widthRel(-60).heightRel(-60);
+        e.cmDisplay.filters.add(shadowFilter);
+        e.cmDisplay.background.editColor().argbAbs(0xFFFFFFFF);
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.filters.filter0.radius")
+                .toAbsolute(50)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        shadowFilter = new cm.display.abs.filter.Shadow();
+        shadowFilter
+            .offsetPositionXAbs(60)
+            .offsetPositionYAbs(0)
+            .editColor().argbAbs(0xFF000000);
+        e = createCmDisplay("filter shadow offsetPosition");
+        e.cmDisplay.position.xRel(30).yRel(30);
+        e.cmDisplay.container.widthRel(-60).heightRel(-60);
+        e.cmDisplay.filters.add(shadowFilter);
+        e.cmDisplay.background.editColor().argbAbs(0xFFFFFFFF);
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.filters.filter0.offsetPositionX")
+                .toAbsolute(0)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        shadowFilter = new cm.display.abs.filter.Shadow();
+        shadowFilter.editColor().argbAbs(0x80000000);
+        shadowFilter.enabledInset();
+        e = createCmDisplay("filter shadow inset");
+        e.cmDisplay.container.editShape().topRightCornerAbs(20, 20).bottomLeftCornerAbs(20, 20);
+        e.cmDisplay.position.xRel(30).yRel(30);
+        e.cmDisplay.container.widthRel(-60).heightRel(-60);
+        e.cmDisplay.filters.add(shadowFilter);
+        e.cmDisplay.background.editColor().argbAbs(0xFFFFFFFF);
+        e.cmDisplay.border.weightAbs(1).setStyle(cm.display.abs.Border.SOLID).editColor().argbAbs(0xFFFF0000);
+        es.push(e);
+        new Tr()
+            .add(new T(e)
+                .property("$.filters.filter0.offsetPositionX")
+                .toAbsolute(0)
+                .easing(randEasing()))
+            .add(new T(e)
+                .property("$.filters.filter0.offsetPositionY")
+                .toAbsolute(0)
+                .easing(randEasing()))
+            .add(new T(e)
+                .property("$.filters.filter0.color.argb")
+                .toAbsolute(0xFFFF0000)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        e = createCmDisplay("filter shadow multiple");
+        e.cmDisplay.container.editShape().applyCircle();
+        e.cmDisplay.position.xRel(30).yRel(30);
+        e.cmDisplay.container.widthRel(-60).heightRel(-60);
+        e.cmDisplay.background.editColor().argbAbs(0xFFFFFFFF);
+        es.push(e);
+
+        shadowFilter = new cm.display.abs.filter.Shadow();
+        shadowFilter.editColor().argbAbs(0xFFFF0000);
+        shadowFilter.offsetSizeAbs(10);
+        shadowFilter
+            .offsetPositionXAbs(-10)
+            .offsetPositionYAbs(-10);
+        e.cmDisplay.filters.add(shadowFilter);
+
+        shadowFilter = new cm.display.abs.filter.Shadow();
+        shadowFilter.editColor().argbAbs(0xFF00FF00);
+        shadowFilter.radiusAbs(10);
+        shadowFilter
+            .offsetPositionXAbs(0)
+            .offsetPositionYAbs(0);
+        e.cmDisplay.filters.add(shadowFilter);
+
+        shadowFilter = new cm.display.abs.filter.Shadow();
+        shadowFilter.editColor().argbAbs(0xFF0000FF);
+        shadowFilter.offsetSizeAbs(10);
+        shadowFilter
+            .offsetPositionXAbs(10)
+            .offsetPositionYAbs(10);
+        e.cmDisplay.filters.add(shadowFilter);
+
+        new Tr()
+            .add(new T(e)
+                .property("$.filters.filter0.color.argb")
+                .toAbsolute(0x30FFFFFF)
+                .easing(randEasing()))
+            // .add(new T(e)
+            //     .property("$.filters.filter1.offsetPositionX")
+            //     .toAbsolute(60)
+            //     .easing(randEasing()))
+            .add(new T(e)
+                .property("$.filters.filter2.offsetSize")
+                .toAbsolute(60)
+                .easing(randEasing()))
+            .start(randDuration(), 1);
+
+        cm.Class.profile();
+    });
+
+    var num = 0;
+    function createCmDisplay(innerHTML)
+    {
+        var y = parseInt(num / 5)
+        var x = num++ % 5;
+        var e = cm.dom.d.createElement("div");
+        var p = cm.dom.d.createElement("p");
+
+        cm.core.DisplayInterface.attach(e);
+        e.cmDisplay.useCss(true);
+        e.cmDisplay.container.widthAbs(130).heightAbs(130);
+        e.cmDisplay.position.xAbs(x * 150 + 20).yAbs(y * 150 + 20);
+        cm.dom.d.body.appendChild(e);
+
+        p.innerHTML = innerHTML;
+        e.appendChild(p);
+
+        return e;
+    };
+
+    // if (location.hostname == "127.0.0.1") { document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=2"></' + 'script>') }
+
+    </script>
+</body>
+</html>

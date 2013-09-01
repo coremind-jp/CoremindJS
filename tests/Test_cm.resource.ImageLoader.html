@@ -1,0 +1,88 @@
+<html>
+<head>
+    <link href="../html5reset-1.6.1.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../config.js"></script>
+    <script type="text/javascript" src="../jscls.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+    var _class = "cm.core.LoaderInterface";
+    document.title = _class;
+    cls.require(
+        _class,
+        "cm.event.Event",
+        "cm.loaderImpl.RequestGroup",
+        "cm.loaderImpl.RequestParameters",
+        function main()
+        {
+            var ajaxUrl = [
+                "http://127.0.0.1/amazonRequest.php?",
+                "Operation=ItemSearch&",
+                "SearchIndex=All&",
+                "Keywords=mac&",
+                "Validate=True"].join("");
+
+            //var ajaxUrl = "http://coremind.jp/Sandbox/CoremindJS/test/sample.xml";
+            //var ajaxUrl = "http://uhyohyohyo.sakura.ne.jp/javascript/13_1_test.cgi";
+            //var ajaxUrl = "http://uhyohyohyo.sakura.ne.jp/javascript/13_1.html";
+            this.progress = function(e, per)
+            {
+                out.d(e.type, per);
+            };
+            this.update = function(e, completeUrl)
+            {
+                out.d(e.type, completeUrl);
+                var loader = cm.loader.getLoaderCache(completeUrl);
+                var p = cm.dom.d.createElement("p");
+                p.innerText = loader.response();
+                document.body.appendChild(p);
+            };
+            this.complete = function(e, report)
+            {
+                var loader = cm.loader.getCache(ajaxUrl);
+                out.d(
+                    report.complete.length,
+                    report.error.length,
+                    report.timeout.length);
+            };
+            this.timeout = function(e, url)
+            {
+                out.d(e.type, url);
+            };
+            this.error = function(e, url)
+            {
+                out.d(e.type, url);
+            };
+
+            var _group = new cm.loaderImpl.RequestGroup();
+            _group.add(new cm.loaderImpl.RequestParameters(ajaxUrl));
+            cls.config.loaderOptionTemplate.ajax.header["Content-Type"] = "application/xml; charset=utf-8";
+            
+            /*
+            var _tempFileName = "./cle18-00";
+            var _format = ".jpg";
+            for(var i = 0, j = 10; i < j; i++)
+            {
+                _group.addRequire(_tempFileName + i + _format);
+                if (i % 2 == 0)
+                    _group.removeRequire(_tempFileName + i + _format);
+            }
+            */
+            _group.addEventListener(cm.event.Event.UPDATE, this.update);
+            _group.addEventListener(cm.event.Event.PROGRESS, this.progress);
+            _group.addEventListener(cm.event.Event.COMPLETE, this.complete);
+            
+            cm.loader.addEventListener(cm.event.Event.TIMEOUT, this.timeout);
+            cm.loader.addEventListener(cm.event.Event.ERROR, this.error);
+            cm.loader.addRequestGroup(_group);
+            /*
+            setTimeout(function(){
+                out.d(cm.loader.mRequestGroups.length);
+                cm.loader.addRequestGroup(_group);
+            }, 8000);
+*/
+        });
+    </script>
+    <script>if (location.hostname == "127.0.0.1") { document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=2"></' + 'script>') }</script>
+</body>
+</html>

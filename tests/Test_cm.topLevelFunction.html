@@ -1,0 +1,43 @@
+<html>
+<head>
+    <title>Test_cm.topLevelFunction.html</title>
+    <script type="text/javascript" src="../config.js"></script>
+    <script type="text/javascript" src="../jscls.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+    cls.require(
+    function main()
+    {
+        console.log("log.dumpを使用したオブジェクトのダンプチェック");
+        ex.object.dump({
+            A:{
+                AChildN:0,
+                AChildS:"AChildS",
+                AChildChild:{
+                    AChildChildB:true,
+                    AChildChildA:[9, NaN, {}, "arrayTest"]
+                },
+                AChildF:function(){}
+            }
+        }, "prefixTest", 3);
+        
+        var sampleData = [true, false, 91574.546, "925", ["array"], {obj:"obj"}, function(){}, null, undefined];
+
+        console.log("プリミティブ型判定チェック(eq.typeOf)");
+        for (var p in sampleData)
+            out.d(sampleData[p], "=", eq.typeOf(sampleData[p]));
+
+        console.log("デバッグ関数チェック(cm.assert)");
+        cm.assert("trueを返す関数に期待値true", function(){ return true; }, true);
+        cm.assert("falseを返す関数に期待値true", function(){ return false; }, true);
+
+        console.log("コンソール出力関数チェック(out)");
+        out.d("log.dを使用したコンソール出力", "カンマで可変引数対応");
+        out.$("log.$を使用したコンソール出力", "カンマで可変引数対応");
+        out.w("log.wを使用したコンソール出力", "カンマで可変引数対応");
+        out.e("log.eを使用したコンソール出力", "カンマで可変引数対応");
+    });
+    </script>
+</body>
+</html>

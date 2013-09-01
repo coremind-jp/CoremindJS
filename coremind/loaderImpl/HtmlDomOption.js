@@ -1,4 +1,4 @@
-cm.Class.create(
+cls.exports(
 {
     /** @name cm.loader */
     $name:"cm.loaderImpl.HtmlDomOption",

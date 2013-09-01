@@ -1,16 +1,18 @@
-cm.Class.create(
+cls.exports(
 //import
     "cm.math.Vector2D",
-    "cm.util.Align",
+    "cm.display.abs.Align",
 {
     /** @name cm.util */
     $name:"cm.display.abs.fill.ImageData",
-    $static:{
-        REPEAT:{
-            NONE:0,
-            X:1,
-            Y:2,
-            XY:3
+    $static:
+    {
+        REPEAT:
+        {
+            NONE:"no-repeat",
+            X:"repeat-x",
+            Y:"repeat-y",
+            XY:"repeat"
         }
     },
     $define:
@@ -27,14 +29,12 @@ cm.Class.create(
         _runtimeInitialize:function()
         {
             this.mSource = "";
-            this.mAlign = new cm.util.Align();
-            //this.mAlpha = 0;
-            //this.mRepeat = cm.display.abs.fill.ImageData.REPEAT.NONE;
+            this.mOrigin = new cm.display.abs.Align();
+            this.mRepeat = cm.display.abs.fill.ImageData.REPEAT.XY;
             
             this.setSource = this._setSource;
-            this.editAlign = this._editAlign;
-            //this.setAlpha = this._setAlpha;
-            //this.setRepeate = this._setRepeate;
+            this.setRepeat = this._setRepeat;
+            this.editOrigin = this._editOrigin;
         },
         
         source:function() {
@@ -51,20 +51,6 @@ cm.Class.create(
             return this;
         },
         
-        /*
-        alpha:function() {
-            return this.mAlpha;
-        },
-        setAlpha:function(val)
-        {
-            this._runtimeInitialize();
-            return this.setAlpha(val);
-        },
-        _setAlpha:function(val)
-        {
-            this.mAlpha = val;
-            return this;
-        },
         repeat:function() {
             return this.mRepeat;
         },
@@ -78,18 +64,31 @@ cm.Class.create(
             this.mRepeat = val;
             return this;
         },
-        */
         
-        align:function() {
-            return this.mAlign;
+        origin:function() {
+            return this.mOrigin;
         },
-        editAlign:function() {
+        editOrigin:function() {
             this._runtimeInitialize();
-            return this.mAlign;
+            return this.mOrigin;
         },
-        _editAlign:function() {
-            return this.mAlign;
+        _editOrigin:function() {
+            return this.mOrigin;
+        },
+
+        /**
+         * 文字列表現を取得します.
+         */
+        dumpProp:function()
+        {
+            this.log(
+                "\nsource:", this.mSource,
+                "\nrepeat:", this.mRepeat,
+                "\nalpha:", this.mAlpha);
+            
+            eq.isUndefined(this.mOrigin) ?
+                this.log("\nalign:", undefined):
+                this.mOrigin.dumpProp();
         }
-        
     }
 });

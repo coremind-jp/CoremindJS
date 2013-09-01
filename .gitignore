@@ -1,9 +1,3 @@
-index.html
-JsDoc/config
-.project
-.settings
-.DS_Store
-resource/
-roadmap.txt
-allinone.js
-snippet.js
+html5reset-1.6.1.css
+/resource
+.html

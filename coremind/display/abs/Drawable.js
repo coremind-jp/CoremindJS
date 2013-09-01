@@ -1,22 +1,19 @@
 /** @name cm.display.abs */
-cm.Class.create(
+cls.exports(
 {
     $name:"cm.display.abs.Drawable",
     $define:
     /** @lends cm.display.abs.Drawable.prototype */
     {
-        Drawable:function(cmDisplay)
-        {
-            this.mTopLayer = null;
-            this.mTopMaskLayer = null;
-            this.mBottomLayer = null;
-            this.mBottomMaskLayer = null;
-            this.mContentParent = this.mContent = cmDisplay.parent;
-        },
+        Drawable:function(cmDisplay) {},
         destroy:function() {},
         
         applySorceParameters:function() {},
         
+        //toplevel
+        updateVisible:function(val) {},
+        updateAlpha:function(val) {},
+
         //border
         enabledBorder:function() {},
         updateBorderWeight:function(val) {},
@@ -43,8 +40,8 @@ cm.Class.create(
         updateRotationX:function(val) {},
         updateRotationY:function(val) {},
         updateRotationZ:function(val) {},
-        updateOriginX:function(val) {},
-        updateOriginY:function(val) {},
+        updateOrigin:function(origin) {},
+        updatePerspective:function(origin) {},
         
         //container
         updateWidth:function(val) {},
@@ -60,33 +57,42 @@ cm.Class.create(
         draw:function()
         {
             var _display = this.mContent.cmDisplay;
-            this._beginDraw();
-            this._tryUpdateBackground(_display.background);
-            this._tryUpdateBorder(_display.border);
-            this._tryUpdatePosition(_display.position);
-            this._tryUpdateTransform(_display.transform);
-            this._tryUpdateContainer(_display.container);
-            this._tryRemoveFilters(_display.filters._removedFilters());
-            this._tryApplyFilters(_display.filters._get());
-            this._endDraw();
+            if (_display.visible() && _display.alpha() > 0)
+            {
+                this._beginDraw();
+                this._tryUpdateBorder(_display.border);
+                this._tryUpdateBackground(_display.background);
+                this._tryUpdatePosition(_display.position);
+                this._tryUpdateTransform(_display.transform);
+                this._tryUpdateContainer(_display.container);
+                this._tryRemoveFilters(_display.filters._removedFilters());
+                this._tryApplyFilters(_display.filters._get());
+                this._endDraw();
+            }
         },
         
         _beginDraw:function(){},
         _tryUpdateBackground:function(background)
         {
-            if (!cm.equal.isUndefined(background) && background.isChanged())
+            if (!eq.isUndefined(background) && background.isChanged())
             {
-                background.isEnabled(2) ?
-                    this.updateBackgroundColor(background.color()):
-                    background.isEnabled(4) ?
-                    this.updateBackgroundGradient(background.gradient()):
+                if (background.isEnabled(2))
+                    this.updateBackgroundColor(background.color());
+                else
+                if (background.isEnabled(4))
+                {
+                    background.gradient().updateThreshold();
+                    this.updateBackgroundGradient(background.gradient());
+                }
+                else
                     this.updateBackgroundImage(background.image());//8
+
                 background.applied();
             }
         },
         _tryUpdateBorder:function(border)
         {
-            if (!cm.equal.isUndefined(border) && border.isChanged())
+            if (!eq.isUndefined(border) && border.isChanged())
             {
                 if (border.isEnabled(2)) this.updateBorderWeight(border.weight());
                 if (border.isEnabled(4)) this.updateBorderStyle(border.style());
@@ -96,7 +102,7 @@ cm.Class.create(
         },
         _tryUpdatePosition:function(position)
         {
-            if (!cm.equal.isUndefined(position) && position.isChanged())
+            if (!eq.isUndefined(position) && position.isChanged())
             {
                 if (position.isEnabled(2)) this.updateX(position.x());
                 if (position.isEnabled(4)) this.updateY(position.y());
@@ -106,7 +112,7 @@ cm.Class.create(
         },
         _tryUpdateTransform:function(transform)
         {
-            if (!cm.equal.isUndefined(transform) && transform.isChanged())
+            if (!eq.isUndefined(transform) && transform.isChanged())
             {
                 if (transform.isEnabled(2)) this.updateScaleX(transform.scaleX());
                 if (transform.isEnabled(4)) this.updateScaleY(transform.scaleY());
@@ -116,14 +122,14 @@ cm.Class.create(
                 if (transform.isEnabled(32)) this.updateRotationY(transform.rotationY());
                 if (transform.isEnabled(64)) this.updateRotationZ(transform.rotationZ());
                 
-                if (transform.isEnabled(128)) this.updateOriginX(transform.originX());
-                if (transform.isEnabled(256)) this.updateOriginY(transform.originY());
+                if (transform.isEnabled(128)) this.updatePerspective(transform.updatePerspective());
+                if (transform.isEnabled(256)) this.updateOrigin(transform.origin());
                 transform.applied();
             }
         },
         _tryUpdateContainer:function(container)
         {
-            if (!cm.equal.isUndefined(container) && container.isChanged())
+            if (!eq.isUndefined(container) && container.isChanged())
             {
                 if (container.isEnabled(2)) this.updateWidth(container.width());
                 if (container.isEnabled(4)) this.updateHeight(container.height());
@@ -135,20 +141,25 @@ cm.Class.create(
         },
         _tryApplyFilters:function(filters)
         {
-            if (!cm.equal.isUndefined(filters))
+            if (!eq.isUndefined(filters))
+            {
                 for(var i = 0, len = filters.length; i < len; i++)
                     if (filters[i].isChanged())
                         this._applyFilter(filters[i]);
+            }
         },
         _applyFilter:function(filter)
         {
-            if (cm.display.abs.fill.Shadow.equal(filter)) this.applyShadow(filter);
-            filter.applied();
+            if (cm.display.abs.filter.Shadow.equal(filter))
+            {
+                this.applyShadow(filter);
+                filter.applied();
+            }
         },
         
         _tryRemoveFilters:function(filters)
         {
-            if (!cm.equal.isUndefined(filters))
+            if (!eq.isUndefined(filters))
                 while(filters.length > 0)
                         this._removeFilter(filters.shift());
         },

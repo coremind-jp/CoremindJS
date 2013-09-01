@@ -1,4 +1,4 @@
-cm.Class.create(
+cls.exports(
 {
     /** @name cm.display.abs */
     $name:"cm.display.abs.Position",
@@ -91,18 +91,20 @@ cm.Class.create(
          */
         zRel:function(val) {
             return this._setWrapperRel("z", val);
-        },
-        
+        }
+    },
+    $override:
+    {
         /**
          * 文字列表現を取得します.
          */
-        toString:function()
+        dumpProp:function()
         {
-            return cm.string.concat(
-                "x:"          , this.x(),
-                "\ny:"        , this.y(),
-                "\nz:"        , this.z(),
-                "\n", this.$super("toString")());
+            this.$super("dumpProp")();
+            this.log(ex.string.concat(
+                "\nx:", this.x(),
+                "\ny:", this.y(),
+                "\nz:", this.z()));
         }
     }
 });

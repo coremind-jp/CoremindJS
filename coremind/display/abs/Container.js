@@ -1,4 +1,4 @@
-cm.Class.create(
+cls.exports(
 //import
     "cm.display.abs.fill.PresetShape",
 {
@@ -37,14 +37,14 @@ cm.Class.create(
                 return this.$super("createTweenParameters");
             
             var _this = this, 
-            from = cm.equal.isUndefined(from) ? this.shape()[property](): from;
+            from = eq.isUndefined(from) ? this.shape()[property](): from;
             return {
                 begin: from,
                 distance: to - from,
                 setter: function(val) {
                     _this.editShape()[_methodName](property == "round" ? "applyRound": p);
                 }
-            }
+            };
         },
         
         /**
@@ -144,20 +144,22 @@ cm.Class.create(
         {
             this.enabledFlag(32);
             return this.mShape;
-        },
-        
-        
+        }
+    },
+    $override:
+    {
         /**
          * 文字列表現を取得します.
          */
-        toString:function()
+        dumpProp:function()
         {
-            return cm.string.concat(
+            this.$super("dumpProp")();
+            this.log(ex.string.concat(
                 "\nwidth:"        , this.width(),
                 "\nheight:"       , this.height(),
                 "\ncontentWidth:" , this.contentWidth(),
-                "\ncontentHeight:", this.contentHeight(),
-                "\n", this.$super("toString")());
+                "\ncontentHeight:", this.contentHeight()));
+            this.mShape.dumpProp();
         }
     }
 });

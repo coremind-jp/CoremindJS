@@ -1,176 +1,168 @@
-cm.Class.create(
+cls.exports(
     "cm.event.Event",
     "cm.loaderImpl.HtmlDomLoaderImpl",
     "cm.loaderImpl.AjaxLoaderImpl",
-    "cm.core.BrowserInterface",
+    "cm.loaderImpl.JsonpLoaderImpl",
 {
     /** @name cm.core */
     $name:"cm.core.LoaderInterface",
     $extends:"cm.event.EventDispatcher",
     $singleton:true,
+    $defaultConfig:{
+        htmlDom:{
+            timeout:15000,
+            retry:1
+        },
+        ajax:{
+            timeout:15000,
+            requestType:"text",
+            method:"GET",
+            retry:3,
+            async:true,
+            withCredentials:false,
+            header:{}
+        }
+    },
     $define:
     /** @lends cm.core.LoaderInterface.prototype */
     {
         LoaderInterface:function()
         {
             cm.loader = this;
+            this.mExtensions = {
+                img:/^(gif|jpeg|jpg|png)/i,
+                video:/^(264|3g2|3gp|3gpp|avc|avi|h264|m4v|mkv|mp4|mpeg|mpg|ogg|ogv|webm)/i,
+                audio:/^(aac|m4a|mp3|oga|ogg|wav)/i
+            };
             
-            this.templateOption = cm.manifest.loaderOptionTemplate;
-            this.mAjaxLoader = new cm.loaderImpl.AjaxLoaderImpl();
-            this.mDomLoader = new cm.loaderImpl.HtmlDomLoaderImpl();
-            
-            this.mLoading = new Object();
-            this.mComplete = new Object();
-            this.mError = new Object();
-            this.mTimeout = new Object();
-            
-            this.mRequestGroups = new Array();
+            this.mRuntimeReqGrp = new Array();
+            this.mLoaders = new Object();
         },
         destroy:function() {},
         
-        isRunning:function() { return this.mRequestGroups.length > 0; },
+        isRunning:function() { return this.mRuntimeReqGrp.length > 0; },
         addRequestGroup:function(requestGroup)
         {
-            if (this.mRequestGroups.indexOf(requestGroup) > -1)
-                return;
-                
-            this.mRequestGroups.push(requestGroup);
-            this._resumeRequestGroup(requestGroup) ?
-                this.mRequestGroups.pop():
-                requestGroup.beginLoad();
-        },
-        _resumeRequestGroup:function(requestGroup)
-        {
-            var _require, _url;
-            while (!cm.equal.isNull(_require = requestGroup.shiftRequire()))
+            if (this.mRuntimeReqGrp.indexOf(requestGroup) == -1)
             {
-                if (!cm.equal.isUndefined(this.mLoading[_require]))
-                    continue;
-                    
-                _url = _require[0];
-                var _isComplete;
-                if (!cm.equal.isUndefined(this.mError[_url]))
-                    _isComplete = requestGroup.updateByError(_url)
-                else
-                if (!cm.equal.isUndefined(this.mTimeout[_url]))
-                    _isComplete = requestGroup.updateByTimeout(_url)
-                else
-                if (!cm.equal.isUndefined(this.mComplete[_url]))
-                    _isComplete = requestGroup.updateByProgress(_url, 1);
-                    
-                if (_isComplete)
-                    return true;
-                    
-                this._request.apply(this, _require);
+                this.mRuntimeReqGrp.push(requestGroup);
+                this._tryParallelRequest(requestGroup);
             }
-            return false;
         },
-        _request:function(url, param, option)
+        _tryParallelRequest:function(requestGroup)
         {
-            url = cm.dom.toAbsolutePath(url);
-            
-            var _loader = this.mDomLoader;
-            var _option = cm.equal.isUndefined(option) ? this.templateOption.htmlDom: option;
-            var _instance = _loader.create(url, param, _option);
-            
-            if (cm.equal.isNull((_instance)))
+            var _require, _isAllCached;
+
+            requestGroup.beginLoad();
+            while (!eq.isNull(_require = requestGroup.shiftRequire()))
             {
-                _loader = this.mAjaxLoader;
-                _option = cm.equal.isUndefined(option) ? this.templateOption.ajax: option;
-                _instance = _loader.create(url, param, _option);
+                var _reqId = _require[0].id();
+
+                this._hasLoader(_reqId) ?
+                    this._resumeRequestGroup(_reqId):
+                    this._addLoader(_require[0], _require[1], _reqId).request();
             }
-                
-            if (cm.equal.isUndefined(this.mLoading[url]))
-                this.mLoading[url] = _instance;
-                
-            _loader.request(_instance);
         },
+        _hasLoader:function(id) {
+            return !eq.isUndefined(this.mLoaders[id]);
+        },
+        _resumeRequestGroup:function(id)
+        {
+            var _loader = this.mLoaders[id];
+            if (_loader.isTimeout())
+                this.stateChangeByTimeout(id);
+            else
+            if (_loader.isError())
+                this.stateChangeByError(id);
+            else
+            if (_loader.isComplete())
+                this.stateChangeByComplete(id);
+        },
+        _addLoader:function(params, option, id)
+        {
+            this.mLoaders[id] = this._createLoader(
+                params.url().split(".").pop(),
+                params.isJsonp());
+            this.mLoaders[id].setting(params, option);
+            return this.mLoaders[id];
+        },
+        _createLoader:function(extension, isJsonp)
+        {
+            for (var tagName in this.mExtensions)
+                if (extension.match(this.mExtensions[tagName]))
+                    return new cm.loaderImpl.HtmlDomLoaderImpl(tagName);
+
+            return isJsonp ?
+                new cm.loaderImpl.JsonpLoaderImpl():
+                new cm.loaderImpl.AjaxLoaderImpl();
+        },
+
         removeRequestGroup:function(requestGroup)
         {
-            var i = this.mRequestGroups.indexOf(requestGroup);
-            if (i > -1) this.mRequestGroups.splice(i, 1);
+            var i = this.mRuntimeReqGrp.indexOf(requestGroup);
+            return i > -1 ?
+                this.mRuntimeReqGrp.splice(i, 1)[0]:
+                null;
         },
         clearRequestGroups:function()
         {
-            this.mLoading = new Object();
-            while (this.isRunning())
-                var _requestGroup = this.mRequestGroups.unshift().destroy();
-                
-            for (var p in this.mLoading)
-                if (cm.equal.isFunction(this.mLoading[p].abort))
-                    this.mLoading[p].abort();
+            while (this.mRuntimeReqGrp.length > 0)
+                removeRequestGroup(this.mRuntimeReqGrp.shift());
         },
         
         
-        getCache:function(url)
+        getLoaderCache:function(requestParams)
         {
-            url = cm.dom.toAbsolutePath(url);
-            return !cm.equal.isUndefined(this.mComplete[url]) ?
-                this.mComplete[url]:
-                !cm.equal.isUndefined(this.mLoading[url]) ?
-                    this.mLoading[url]:
-                    !cm.equal.isUndefined(this.mError[url]) ?
-                        this.mError[url]:
-                        !cm.equal.isUndefined(this.mTimeout[url]) ?
-                            this.mTimeout[url]:
-                            null;
+            var _reqId = eq.isString(requestParams) ?
+                requestParams:
+                requestParams.id();
+
+            return !eq.isUndefined(this.mLoaders[_reqId]) ?
+                this.mLoaders[_reqId]:
+                null;
         },
-        clearCache:function(url)
+        clearLoaderCache:function(requestParams)
         {
-            if (cm.equal.isUndefined(url))
-            {
-                this.mComplete = new Object();
-                this.mError = new Object();
-                this.mTimeout = new Object();
-            }
-            else
-            {
-                delete this.mComplete[url];
-                delete this.mError[url];
-                delete this.mTimeout[url];
-            }
+            delete this.mLoaders[eq.isString(requestParams) ?
+                requestParams:
+                requestParams.id()];
         },
         
         
-        stateChangeByProgress:function(url, per)
+        stateChangeByProgress:function(requestId, per)
         {
-            var _requestGroups = this.mRequestGroups;
-            for (var i = 0, len = _requestGroups.length; i < len; i++)
-                _requestGroups[i].updateByProgress(url, per);
+            var _reqGrp = this.mRuntimeReqGrp;
+            for (var i = 0, len = _reqGrp.length; i < len; i++)
+                if (_reqGrp[i].has(requestId))
+                    _reqGrp[i].updateByProgress(requestId, per);
         },
-        stateChangeByError:function(url)
+        stateChangeByError:function(requestId)
         {
-            this.mError[url] = this.mLoading[url];
-            delete this.mLoading[url];
-            
-            var _requestGroups = this.mRequestGroups;
-            for (var i = 0; i < _requestGroups.length; i++)
-                if (_requestGroups[i].updateByError(url))
-                    _requestGroups.splice(i--, 1);
+            var _reqGrp = this.mRuntimeReqGrp;
+            for (var i = 0; i < _reqGrp.length; i++)
+                if (_reqGrp[i].has(requestId)
+                &&  _reqGrp[i].updateByError(requestId))
+                    this.removeRequestGroup(_reqGrp[i]).destroy();
                     
-            this.dispatchEvent(cm.event.Event.ERROR, url);
+            this.dispatchEvent(cm.event.Event.ERROR, requestId);
         },
-        stateChangeByTimeout:function(url)
+        stateChangeByTimeout:function(requestId)
         {
-            this.mTimeout[url] = this.mLoading[url];
-            delete this.mLoading[url];
-            
-            var _requestGroups = this.mRequestGroups;
-            for (var i = 0; i < _requestGroups.length; i++)
-                if (_requestGroups[i].updateByTimeout(url))
-                    _requestGroups.splice(i--, 1);
+            var _reqGrp = this.mRuntimeReqGrp;
+            for (var i = 0; i < _reqGrp.length; i++)
+                if (_reqGrp[i].has(requestId)
+                &&  _reqGrp[i].updateByTimeout(requestId))
+                    this.removeRequestGroup(_reqGrp[i]).destroy();
                 
-            this.dispatchEvent(cm.event.Event.TIMEOUT, url);
+            this.dispatchEvent(cm.event.Event.TIMEOUT, requestId);
         },
-        stateChangeByComplete:function(url)
+        stateChangeByComplete:function(requestId)
         {
-            this.mComplete[url] = this.mLoading[url];
-            delete this.mLoading[url];
-            
-            var _requestGroups = this.mRequestGroups;
-            for (var i = 0; i < _requestGroups.length; i++)
-                if (_requestGroups[i].updateByProgress(url, 1))
-                    _requestGroups.splice(i--, 1);
+            var _reqGrp = this.mRuntimeReqGrp;
+            for (var i = 0; i < _reqGrp.length; i++)
+                if (_reqGrp[i].has(requestId)
+                &&  _reqGrp[i].updateByProgress(requestId, 1))
+                   this.removeRequestGroup(_reqGrp[i]).destroy();
         }
     }
     

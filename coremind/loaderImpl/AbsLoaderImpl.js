@@ -1,89 +1,119 @@
-cm.Class.create(
+cls.exports(
+    "cm.util.UpdateDispatcher",
     "cm.core.LoaderInterface",
 {
     /** @name cm.loader */
     $name:"cm.loaderImpl.AbsLoaderImpl",
+    $static:
+    {
+        IDLE:0,
+        LOAD:1,
+        COMPLETE:2,
+        TIMEOUT:3,
+        ERROR:4
+    },
     $define:
     /** @lends cm.loader.AbsLoaderImpl.prototype */
     {
         AbsLoaderImpl:function()
         {
-            this.mTimer = {};
-            cm.util.UpdateDispatcher.addUpdater(this);
+            this.mState    = this.$class.IDLE;
+            this.mRetry    = 0;
+            this.mTimeout  = 0;
+            this.mProgress = 0;
+            this.mLoader   = null;
+            this.mResponse = null;
         },
-        destroy:function() {
+        destroy:function()
+        {
+            if (!eq.isNull(this.mLoader))
+                this._resetLoader();
             cm.util.UpdateDispatcher.removeUpdater(this);
         },
         
-        create:function(url, param, option) {},
-        request:function(loaderObject)
+        setting:function(requestParams, requestOption)
         {
-            var _arg = loaderObject.cmArgumentsCache;
-            var _url = _arg[0];
-            var _option = _arg[2];
-            
-            this.mTimer[_url] = _option.timeout;
-            return loaderObject
+            this.mParams  = requestParams;
+            this.mOption  = requestOption;
+            this.mRetry   = requestOption.retry;
+            this.mTimeout = requestOption.timeout;
         },
-        initializeLoader:function(loaderObject) {},
-        resetLoader:function(loaderObject) {
-            delete this.mTimer[loaderObject.cmArgumentsCache[0]];
-        },
-        
-        attachCustomProperty:function(loaderObject, url, param, option)
+        request:function()
         {
-            param = this.objectToQuery(param);
-            loaderObject.cmRetry = option.retry;
-            loaderObject.cmArgumentsCache = Array.prototype.slice.call(arguments, 1);
+            cm.util.UpdateDispatcher.addUpdater(this);
+            this.mProgress = 0;
+            this.mState    = this.$class.LOAD;
+            this.mResponse = null;
+            this._setLoader();
         },
-        detachCustomProperty:function(loaderObject)
+        _setLoader:function() {},
+        _resetLoader:function() {},
+
+        isRunning:function() {
+            return this.$class.LOAD == this.mState;
+        },
+        isComplete:function() {
+            return this.$class.COMPLETE == this.mState;
+        },
+        isTimeout:function() {
+            return this.$class.TIMEOUT == this.mState;
+        },
+        isError:function() {
+            return this.$class.ERROR == this.mState;
+        },
+        response:function() {
+            return this.mResponse;
+        },
+
+        /* event handring */
+        onProgress:function(per)
         {
-            loaderObject.cmRetry = undefined;
-            loaderObject.cmArgumentsCache = undefined;
+            cm.core.LoaderInterface.stateChangeByProgress(this.mParams.id(), per);
+            this.mProgress = per;
         },
-        objectToQuery:function(param)
+        onTimeout:function()
         {
-            var _result = "";
-            
-            if (cm.equal.isObject(param))
-                for (var prop in param)
-                    _result += cm.string.concat(
-                        _result == "" ? "": "&", prop, "=", encodeURI(param[prop]));
-                        
-            return _result;
+            cm.util.UpdateDispatcher.removeUpdater(this);
+            this.mProgress = 1;
+            this.mState    = this.$class.TIMEOUT;
+            cm.core.LoaderInterface.stateChangeByTimeout(this.mParams.id());
+            this._resetLoader();
         },
-        
-        onProgress:function(url, per) {
-            cm.core.LoaderInterface.stateChangeByProgress(url, per);
-        },
-        onTimeout:function(loaderObject)
+        onError:function(error)
         {
-            if (--loaderObject.cmRetry == 0)
-            {
-                cm.core.LoaderInterface.stateChangeByTimeout(loaderObject.cmArgumentsCache[0]);
-                this.resetLoader(loaderObject);
-            }
-            else
-                this.request.apply(this, [loaderObject]);
+            cm.util.UpdateDispatcher.removeUpdater(this);
+            this.mProgress = 1;
+            this.mState    = this.$class.ERROR;
+            this.mResponse = error;
+            cm.core.LoaderInterface.stateChangeByError(this.mParams.id());
+            this._resetLoader();
         },
-        onError:function(loaderObject)
+        onComplete:function(response)
         {
-            cm.core.LoaderInterface.stateChangeByError(loaderObject.cmArgumentsCache[0]);
-            this.resetLoader(loaderObject);
+            cm.util.UpdateDispatcher.removeUpdater(this);
+            this.mProgress = 1;
+            this.mState    = this.$class.COMPLETE;
+            this.mResponse = response;
+            cm.core.LoaderInterface.stateChangeByComplete(this.mParams.id());
+            this._resetLoader();
         },
-        onComplete:function(loaderObject)
-        {
-            cm.core.LoaderInterface.stateChangeByComplete(loaderObject.cmArgumentsCache[0]);
-            this.resetLoader(loaderObject);
-        },
-        
+
         //updater interface(timeout observer)
         _update:function(delta, elapsed)
         {
-            for (var url in this.mTimer)
-                if ((this.mTimer[url] -= elapsed) < 0)
-                    this.onTimeout(cm.core.LoaderInterface.getCache(url));
-            return true;
+            if (0 < (this.mTimeout -= elapsed))
+                return true;
+
+            if (0 < --this.mRetry)
+            {
+                this.request();
+                return true;
+            }
+            else
+            {
+                this.onTimeout();
+                return false;
+            }
         }
     }
 });

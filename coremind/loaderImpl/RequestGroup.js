@@ -1,5 +1,4 @@
-cm.Class.create(
-    "cm.core.BrowserInterface",
+cls.exports(
 {
     /** @name cm.loader */
     $name:"cm.loaderImpl.RequestGroup",
@@ -9,113 +8,99 @@ cm.Class.create(
     {
         RequestGroup:function()
         {
-            this.mIsRunning = false;
-            this.mTotalRequestNum = 0;
             this.mRequires = new Object();
-            this.mProgress = new Object();
-            
-            this.mErrors = new Array();
-            this.mTimeouts = new Array();
+            this.mRequiresId = new Array();
+
+            this.mTotalRequestNum = 0;
+
+            this.isRunning = false;
+            this.mProgress = 0;
+            this.mCompletes = this.mErrors = this.mTimeouts = null;
         },
         destroy:function() {},
         
-        _hasUrl:function(url) { return !cm.equal.isUndefined(this.mRequires[url]); },
-        
-        addRequire:function(url, param, option)
+        add:function(requestParams, requestOption)
         {
-            if (this.mIsRunning)
-            {                
-                cm.log.w("addRequire is canceled. this object is aleady run.");
-                return;
-            }
-
-            url = cm.dom.toAbsolutePath(url)
-            if (!this._hasUrl(url))
+            var _reqId = requestParams.id();
+            if (!this.has(_reqId))
             {
+                this.mRequiresId.push(_reqId);
+                this.mRequires[_reqId] = arguments;
                 this.mTotalRequestNum++;
-                this.mRequires[url] = arguments;
             }
             return this;
         },
-        removeRequire:function(url)
-        {
-            if (this.mIsRunning)
-            {                
-                cm.log.w("removeRequire is canceled. this object is aleady run.");
-                return;
-            }
-            
-            url = cm.dom.toAbsolutePath(url)
-            if (this._hasUrl(url))
-            {
-                this.mTotalRequestNum--;
-                delete this.mRequires[url];
-            }
-            return this;
-        },
-        clone:function()
-        {
-            var _clone = new this.$class();
-            _clone.mTotalRequestNum = this.mTotalRequestNum;
-            for (var p in this.mRequires)
-                _clone.mRequires[p] = this.mRequires[p];
-            return _clone;
-        },
+        has:function(id) { return this.mRequiresId.indexOf(id) > -1; },
         
-        /* from LoaderInterface be call method */
-        beginLoad:function() { this.mIsRunning = true; },
+        /* be call method from LoaderInterface */
+        beginLoad:function()
+        {
+            this.add = null;
+            this.mCompletes = new Array();
+            this.mErrors = new Array();
+            this.mTimeouts = new Array();
+        },
         shiftRequire:function()
         {
             for (var p in this.mRequires)
             {
-                var _requestParams = this.mRequires[p];
+                var _addArgus = this.mRequires[p];
                 delete this.mRequires[p];
-                return _requestParams;
+                return _addArgus;
             }
+            delete this["mRequires"];
             return null;
         },
-        updateByError:function(url)
+
+        updateByError:function(requestId)
         {
-            this.mErrors.push(url);
-            return this.updateByProgress(url, 0);
+            this.mErrors.push(requestId);
+            this.mRequiresId.splice(this.mRequiresId.indexOf(requestId), 1);
+            return this.updateByProgress(requestId, 1);
         },
-        updateByTimeout:function(url)
+        updateByTimeout:function(requestId)
         {
-            this.mTimeouts.push(url);
-            return this.updateByProgress(url, 0);
+            this.mTimeouts.push(requestId);
+            this.mRequiresId.splice(this.mRequiresId.indexOf(requestId), 1);
+            return this.updateByProgress(requestId, 1);
         },
-        updateByProgress:function(url, per)
+        updateByProgress:function(requestId, per)
         {
-            this.mProgress[url] = per;
-            
-            var _progress = this._calcProgress();
-            var _isComplete = 1 <= _progress;
+            var _totalPer, _destroyFlag;
+
+            this.mProgress += per;
+            _totalPer = this._calcProgress();
+
+            this.dispatchEvent(cm.event.Event.PROGRESS, _totalPer);
+
+            this._validateUpdate(requestId, per);
+            _destroyFlag = this._validateComplete(_totalPer);
+            //this.log("Current Total Per:", _totalPer, _destroyFlag);
+
+            return _destroyFlag;
+        },
+        _calcProgress:function() { return this.mProgress / this.mTotalRequestNum; },
+        _validateUpdate:function(requestId, per)
+        {
+            if (per == 1)
+            {
+                this.mRequiresId.splice(this.mRequiresId.indexOf(requestId), 1);
+                this.mCompletes.push(requestId);
+                this.dispatchEvent(cm.event.Event.UPDATE, requestId);
+            }
+        },
+        _validateComplete:function(totalPer)
+        {
+            var _isComplete = 1 <= totalPer;
+
             if (_isComplete)
-            {
                 this.dispatchEvent(cm.event.Event.COMPLETE, {
-                    error:this.mErrors.slice(0),
-                    timeout:this.mTimeouts.slice(0)
+                    complete:this.mCompletes,
+                    error:this.mErrors,
+                    timeout:this.mTimeouts
                 });
-                this.destroy();
-            }
-            else
-            {
-                this.dispatchEvent(cm.event.Event.PROGRESS, _progress);
-                if (per == 1) this.dispatchEvent(cm.event.Event.UPDATE, url);
-            }
+
             return _isComplete;
-        },
-        _calcProgress:function()
-        {
-            var _current = 0;
-            for (var url in this.mProgress)
-                _current += this.mProgress[url];
-            
-            var _total = this.mTotalRequestNum
-                - this.mErrors.length
-                - this.mTimeouts.length;
-           
-            return _current / _total;
         }
     }
 });

@@ -1,0 +1,156 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="../config.js"></script>
+    <script type="text/javascript" src="../jscls.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+    var _class = "cm.Class";
+    document.title = _class;
+    out.d("TEST[using class]");
+    cls.require(
+        "cm.core.BrowserInterface",
+        //"cm.util.EmmetParser",
+        function main()
+        {
+            var a = Date.now();
+            cm.emmet.parse("div");
+
+            cm.emmet.parse("#attrName1");
+            cm.emmet.parse("#attrName1.attrName2");
+            cm.emmet.parse(".attrName1#attrName2.attrName3");
+
+            cm.emmet.parse("a#attrName1");
+            cm.emmet.parse("a#attrName1.attrName2");
+            cm.emmet.parse("a.attrName1#attrName2.attrName3");
+
+            cm.emmet.parse("a#attrName1*10");
+            cm.emmet.parse("a#attrName1.attrName2*10");
+            cm.emmet.parse("a.attrName1#attrName2.attrName3*10");
+
+            cm.emmet.parse("div#attrName1[width]*10");
+            cm.emmet.parse("div#attrName1.attrName2[width]*10");
+            cm.emmet.parse("div.attrName1#attrName2.attrName3[width]*10");
+
+            // cm.emmet.parse("h${context$}#idName$.className$[attrName$=attrVal$]*6");
+            // cm.emmet.parse("h$@6{context$@5}#idName$@4.className$@3[attrName$@2=attrVal$@9]*6");
+            // cm.emmet.parse("h$@-6{context$@-5}#idName$@-4.className$@-3[attrName$@-2=attrVal$@-9]*6");
+            //cm.emmet.parse("h${context$}#idName$.className$[attrName$=attrVal$]*6");
+            //attribute
+            //name validate
+             var _ = "attrName";
+             var ok = ["bcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.%"];
+             var ng = [
+                 "\\a",
+                 "\"",
+                 "!",
+                 "#",
+                 "&",
+                 "'",
+                 "(",
+                 ")",
+                 "~",
+                 "|",
+                 "<",
+                 "?",
+                 "}",
+                 "[",
+                 "{",
+                 ":",
+                 ";",
+                 "*",
+                 ",",
+                 "@",
+                 "`"];
+            //for (p in ng) cm.emmet.parse("div["+_+ng[p]+"]");
+            //for (p in ok) cm.emmet.parse("div["+_+ok[p]+"]");
+
+            //single test
+            // cm.emmet.parse("div[width]");
+            // cm.emmet.parse("div[width=20]");
+            // cm.emmet.parse("div[width=\"20\"]");
+            // cm.emmet.parse("div[width='20']");
+
+            //pair test
+            // cm.emmet.parse("div[width height]");
+            // cm.emmet.parse("div[width=20 height]");
+            // cm.emmet.parse("div[width height=30]");
+            // cm.emmet.parse("div[width=20 height=30]");
+
+            // cm.emmet.parse("div[width=\"20\" height]");
+            // cm.emmet.parse("div[width=\"20\"height]");
+            // cm.emmet.parse("div[width height=\"30\"]");
+            // cm.emmet.parse("div[width=\"20\" height=\"30\"]");
+            // cm.emmet.parse("div[width=\"20\"height=\"30\"]");
+
+            // cm.emmet.parse("div[width='20' height]");
+            // cm.emmet.parse("div[width='20'height]");
+            // cm.emmet.parse("div[width height='30']");
+            // cm.emmet.parse("div[width='20' height='30']");
+            // cm.emmet.parse("div[width='20'height='30']");
+
+            //more test
+            // cm.emmet.parse("div[color width height]");
+            // cm.emmet.parse("div[color=#ff0 width height]");
+            // cm.emmet.parse("div[color width=20 height]");
+            // cm.emmet.parse("div[color width height=30]");
+            // cm.emmet.parse("div[color=#ff0 width=20 height]");
+            // cm.emmet.parse("div[color width=20 height=30]");
+            // cm.emmet.parse("div[color=#ff0 width height=30]");
+            // cm.emmet.parse("div[color=#ff0 width=20 height=30]");
+
+            // cm.emmet.parse("div[color=\"#ff0\" width height]");
+            // cm.emmet.parse("div[color=\"#ff0\"width height]");
+            // cm.emmet.parse("div[color width=\"20\" height]");
+            // cm.emmet.parse("div[color width=\"20\"height]");
+            // cm.emmet.parse("div[color width height=\"30\"]");
+            // cm.emmet.parse("div[color=\"#ff0\" width=\"20\" height]");
+            // cm.emmet.parse("div[color=\"#ff0\"width=\"20\"height]");
+            // cm.emmet.parse("div[color width=\"20\" height=\"30\"]");
+            // cm.emmet.parse("div[color width=\"20\"height=\"30\"]");
+            // cm.emmet.parse("div[color=\"#ff0\" width=\"20\" height=\"30\"]");
+            // cm.emmet.parse("div[color=\"#ff0\"width=\"20\"height=\"30\"]");
+
+            // cm.emmet.parse("div[color='#ff0' width height]");
+            // cm.emmet.parse("div[color='#ff0'width height]");
+            // cm.emmet.parse("div[color width='20' height]");
+            // cm.emmet.parse("div[color width='20'height]");
+            // cm.emmet.parse("div[color width height='30']");
+            // cm.emmet.parse("div[color='#ff0' width='20' height]");
+            // cm.emmet.parse("div[color='#ff0'width='20'height]");
+            // cm.emmet.parse("div[color width='20' height='30']");
+            // cm.emmet.parse("div[color width='20'height='30']");
+            // cm.emmet.parse("div[color='#ff0' width='20' height='30']");
+            // cm.emmet.parse("div[color='#ff0'width='20'height='30']");
+
+            // cm.emmet.parse("div[width='20' height]");
+            // cm.emmet.parse("div[width='20'height]");
+            // cm.emmet.parse("div[width height='30']");
+            // cm.emmet.parse("div[width='20' height='30']");
+            // cm.emmet.parse("div[width='20'height='30']");
+
+            // cm.emmet.parse("div[width='20px'id='abs'height='60px']");
+            // cm.emmet.parse("div[width='20px' id='abs' height='60px']");
+            // cm.emmet.parse("div[width=20px id=abs height=60px]");
+            // cm.emmet.parse("div[width=20px id=abs height]");
+            // cm.emmet.parse("div[width=20px id='abs'height]");
+            // cm.emmet.parse("div[width=20px id='abs'　height]");
+
+            // cm.emmet.parse("div[width=20px id='abs'height=60px]");
+            // cm.emmet.parse("div[width=20px id='abs'　height='60px']");
+            // cm.emmet.parse("div[width=20px id=\"abs\"height=60px]");
+            // cm.emmet.parse("div[width=20px id=\"abs\"　height='60px']");
+
+            //  cm.emmet.parse("div[width=20px id　height='60px']");
+            //  cm.emmet.parse("div[width=20px id=''　height='60px']");
+            //  cm.emmet.parse("div[wid\\]th=20px id=\"\"　height='60px']");
+            //  cm.emmet.parse("a[href=http://\\$google.co.jp/ id=\"url\"　target=_blink]");
+             // cm.emmet.parse("div>h$[class=$value]*5>{Click }+a[href=http://google.co.jp/]{here}+{ to continue$@5}");
+            cm.dom.util.create("div+div>p>span+em^bq>ifr");
+            var b = Date.now();
+            out.d(b-a);
+        });
+    </script>
+</body>
+</html>

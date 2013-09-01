@@ -1,4 +1,4 @@
-cm.Class.create(
+cls.exports(
 //import
     "cm.display.abs.fill.Color",
 {
@@ -27,8 +27,8 @@ cm.Class.create(
         Border:function()
         {
             //don't use index 0.
-            this.mParams = [-1, 0, 0];
-            this.mColor = new cm.display.abs.fill.Color(0xFFFFFFFF);
+            this.mParams = [-1, 0, -1];
+            this.mColor = new cm.display.abs.fill.Color(0xffffffff);
         },
         destroy:function() {},
         
@@ -73,6 +73,16 @@ cm.Class.create(
             this.enabledFlag(8);
             return this.mColor;
         }
-
+    },
+    $override:
+    {
+        dumpProp:function()
+        {
+            this.$super("dumpProp")();
+            this.log(ex.string.concat(
+                "\nweight:", this.weight(),
+                "\nstyle:" , this.style()));
+            this.mColor.dumpProp();
+        }
     }
 });

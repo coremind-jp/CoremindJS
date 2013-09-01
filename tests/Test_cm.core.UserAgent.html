@@ -1,0 +1,23 @@
+<html>
+<head>
+    <script type="text/javascript" src="../config.js"></script>
+</head>
+<body>
+    <script type="text/javascript" src="../jscls.js"></script>
+    <script type="text/javascript">
+    var _class = "cm.core.UserAgent";
+    document.title = _class;
+    cls.require(_class,
+    function main()
+    {
+        out.d("TEST[ua dump]");
+        out.d(
+            cm.core.UserAgent.getPlatformName(), " ",
+            cm.core.UserAgent.platformVersion, " ",
+            cm.core.UserAgent.getVendorName(), " ",
+            cm.core.UserAgent.getBrowserName(), " ",
+            cm.core.UserAgent.browserVersion);
+    });
+    </script>
+</body>
+</html>
