@@ -1,5 +1,6 @@
 cls.exports(
     "cm.core.UserAgent",
+    "cm.loaderImpl.AjaxOption",
 {
     /** @name cm.loader */
     $name:"cm.loaderImpl.AjaxLoaderImpl",
@@ -55,7 +56,7 @@ cls.exports(
             this.$super("setting")(
                 requestParams,
                 eq.isUndefined(requestOption) ?
-                    cls.config.loaderOptionTemplate.ajax:
+                    new cm.loaderImpl.AjaxOption():
                     requestOption);
         },
         _setLoader:function()

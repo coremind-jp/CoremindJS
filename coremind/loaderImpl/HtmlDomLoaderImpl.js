@@ -1,5 +1,6 @@
 cls.exports(
     "cm.core.DomInterface",
+    "cm.loaderImpl.HtmlDomOption",
 {
     /** @name cm.loader */
     $name:"cm.loaderImpl.HtmlDomLoaderImpl",
@@ -20,7 +21,7 @@ cls.exports(
             this.$super("setting")(
                 requestParams,
                 eq.isUndefined(requestOption) ?
-                cls.config.loaderOptionTemplate.htmlDom:
+                    new cm.loaderImpl.HtmlDomOption():
                     requestOption);
         },
         _setLoader:function()
